@@ -1,6 +1,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Build Status](https://travis-ci.org/cn-src/snippets-box.svg?branch=master)](https://travis-ci.org/cn-src/snippets-box)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/643d3ca00a044ebc98de3ab6da52c93f)](https://www.codacy.com/manual/cn-src/snippets-box?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=cn-src/snippets-box&amp;utm_campaign=Badge_Grade)
+[![codecov](https://codecov.io/gh/cn-src/snippets-box/branch/master/graph/badge.svg)](https://codecov.io/gh/cn-src/snippets-box)
 [![jitpack](https://jitpack.io/v/cn-src/snippets-box.svg)](https://jitpack.io/#cn-src/snippets-box)
 
 # Snippets Box
@@ -17,7 +18,7 @@ public interface CityRepository extends CrudRepository<City, Long> {
 ## jOOQ
 * 支持代码生成的 Record 类型，被 `@RequestBody` 注解时，绑定 `org.jooq.Configuration`（间接设置数据源）
 > 可选的 @RecordAttach("bean name") 注解用于指定 `org.jooq.Configuration` Bean
-* 自动填充审计字段 `cn.javaer.gistbox.jooq.AuditableRecordListener`
+* 自动填充审计字段 `cn.javaer.snippetsbox.jooq.AuditableRecordListener`
 ```java
 @RestController
 public class DemoController {
