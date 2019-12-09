@@ -1,18 +1,3 @@
-/*
- * Copyright 2017-2019 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package cn.javaer.snippetsbox.springframework.boot.data.jdbc.jooq;
 
 import org.jooq.DSLContext;
@@ -79,9 +64,8 @@ public class SimpleJooqRepository<T, ID> implements JooqRepository<T, ID> {
         table = DSL.table(persistentEntity.getTableName());
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.springframework.data.repository.CrudRepository#save(S)
+    /**
+     * {@inheritDoc}
      */
     @Transactional
     @Override
@@ -89,9 +73,8 @@ public class SimpleJooqRepository<T, ID> implements JooqRepository<T, ID> {
         return entityOperations.save(instance);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.springframework.data.repository.CrudRepository#save(java.lang.Iterable)
+    /**
+     * {@inheritDoc}
      */
     @Transactional
     @Override
@@ -102,54 +85,48 @@ public class SimpleJooqRepository<T, ID> implements JooqRepository<T, ID> {
                 .collect(Collectors.toList());
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.springframework.data.repository.CrudRepository#findOne(java.io.Serializable)
+    /**
+     * {@inheritDoc}
      */
     @Override
     public Optional<T> findById(ID id) {
         return Optional.ofNullable(entityOperations.findById(id, type));
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.springframework.data.repository.CrudRepository#exists(java.io.Serializable)
+    /**
+     * {@inheritDoc}
      */
     @Override
     public boolean existsById(ID id) {
         return entityOperations.existsById(id, type);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.springframework.data.repository.CrudRepository#findAll()
+    /**
+     * {@inheritDoc}
      */
     @Override
     public Iterable<T> findAll() {
         return entityOperations.findAll(type);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.springframework.data.repository.CrudRepository#findAll(java.lang.Iterable)
+    /**
+     * {@inheritDoc}
      */
     @Override
     public Iterable<T> findAllById(Iterable<ID> ids) {
         return entityOperations.findAllById(ids, type);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.springframework.data.repository.CrudRepository#count()
+    /**
+     * {@inheritDoc}
      */
     @Override
     public long count() {
         return entityOperations.count(type);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.springframework.data.repository.CrudRepository#delete(java.io.Serializable)
+    /**
+     * {@inheritDoc}
      */
     @Transactional
     @Override
@@ -157,9 +134,8 @@ public class SimpleJooqRepository<T, ID> implements JooqRepository<T, ID> {
         entityOperations.deleteById(id, type);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.springframework.data.repository.CrudRepository#delete(java.lang.Object)
+    /**
+     * {@inheritDoc}
      */
     @Transactional
     @Override
@@ -167,9 +143,8 @@ public class SimpleJooqRepository<T, ID> implements JooqRepository<T, ID> {
         entityOperations.delete(instance, type);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.springframework.data.repository.CrudRepository#delete(java.lang.Iterable)
+    /**
+     * {@inheritDoc}
      */
     @Transactional
     @Override
@@ -177,26 +152,38 @@ public class SimpleJooqRepository<T, ID> implements JooqRepository<T, ID> {
         entities.forEach(it -> entityOperations.delete(it, (Class<T>) it.getClass()));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Transactional
     @Override
     public void deleteAll() {
         entityOperations.deleteAll(type);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Iterable<T> findAll(Sort sort) {
         SelectWhereStep<Record> step = dsl.selectFrom(table);
-        sortStep(step, sort);
+        SimpleJooqRepository.sortStep(step, sort);
         return toList(step);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Page<T> findAll(Pageable pageable) {
         SelectWhereStep<Record> step = dsl.selectFrom(table);
-        pageableStep(step, pageable);
+        SimpleJooqRepository.pageableStep(step, pageable);
         return new PageImpl<>(toList(step), pageable, count());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <S extends T> Optional<S> findOne(Example<S> example) {
         SelectConditionStep<Record> step = dsl.selectFrom(table).where();
@@ -204,6 +191,9 @@ public class SimpleJooqRepository<T, ID> implements JooqRepository<T, ID> {
         return toOne(step);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <S extends T> Iterable<S> findAll(Example<S> example) {
         SelectConditionStep<Record> step = dsl.selectFrom(table).where();
@@ -211,19 +201,25 @@ public class SimpleJooqRepository<T, ID> implements JooqRepository<T, ID> {
         return toList(step);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <S extends T> Iterable<S> findAll(Example<S> example, Sort sort) {
         SelectConditionStep<Record> step = dsl.selectFrom(table).where();
         exampleStep(step, example);
-        sortStep(step, sort);
+        SimpleJooqRepository.sortStep(step, sort);
         return toList(step);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <S extends T> Page<S> findAll(Example<S> example, Pageable pageable) {
         SelectConditionStep<Record> step = dsl.selectFrom(table).where();
         exampleStep(step, example);
-        pageableStep(step, pageable);
+        SimpleJooqRepository.pageableStep(step, pageable);
 
         SelectConditionStep<Record1<Integer>> countStep = dsl.selectCount().from(table).where();
         exampleStep(countStep, example);
@@ -232,6 +228,9 @@ public class SimpleJooqRepository<T, ID> implements JooqRepository<T, ID> {
         return new PageImpl<>(toList(step), pageable, count);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <S extends T> long count(Example<S> example) {
         SelectConditionStep<Record1<Integer>> countStep = dsl.selectCount().from(table).where();
@@ -239,16 +238,25 @@ public class SimpleJooqRepository<T, ID> implements JooqRepository<T, ID> {
         return dsl.fetchCount(countStep);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <S extends T> boolean exists(Example<S> example) {
         return count(example) > 0;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<T> findAll(QueryStep queryStep) {
         return queryMapper.asList(queryStep.step(dsl));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Optional<T> findOne(QueryStep queryStep) {
         return Optional.ofNullable(DataAccessUtils.nullableSingleResult(queryMapper.asList(queryStep.step(dsl))));
@@ -290,14 +298,15 @@ public class SimpleJooqRepository<T, ID> implements JooqRepository<T, ID> {
         }
     }
 
-    private void pageableStep(SelectOrderByStep<Record> step, Pageable pageable) {
-        sortStep(step, pageable.getSort());
+    private static void pageableStep(SelectOrderByStep<Record> step, Pageable pageable) {
+        SimpleJooqRepository.sortStep(step, pageable.getSort());
         step.offset(pageable.getOffset())
                 .limit(pageable.getPageSize());
     }
 
-    private void sortStep(SelectOrderByStep<Record> step, Sort sort) {
+    private static void sortStep(SelectOrderByStep<Record> step, Sort sort) {
         if (sort.isSorted()) {
+            //noinspection rawtypes
             SortField[] fields = sort.map(it -> it.isAscending() ? DSL.field(it.getProperty()).asc()
                     : DSL.field(it.getProperty()).desc()).toList().toArray(new SortField[0]);
             step.orderBy(fields);
@@ -306,6 +315,7 @@ public class SimpleJooqRepository<T, ID> implements JooqRepository<T, ID> {
 
     private <S extends T> List<S> toList(ResultQuery<Record> rq) {
         try (ResultSet rs = rq.fetchResultSet()) {
+            //noinspection unchecked
             return (List<S>) jdbcMapper.stream(rs).collect(Collectors.toList());
         }
         catch (SQLException e) {
@@ -315,6 +325,7 @@ public class SimpleJooqRepository<T, ID> implements JooqRepository<T, ID> {
 
     private <S extends T> Optional<S> toOne(ResultQuery<Record> rq) {
         try (ResultSet rs = rq.fetchResultSet()) {
+            //noinspection unchecked
             return Optional.ofNullable(DataAccessUtils.nullableSingleResult(((JdbcMapper<S>) jdbcMapper).stream(rs).collect(Collectors.toList())));
         }
         catch (SQLException e) {
