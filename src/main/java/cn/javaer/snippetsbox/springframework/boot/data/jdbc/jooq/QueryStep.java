@@ -10,5 +10,5 @@ import org.jooq.TableLike;
 public interface QueryStep {
 
     @SuppressWarnings("rawtypes")
-    <SET extends TableLike & ResultQuery> SET step(DSLContext dsl);
+    <Q extends TableLike & ResultQuery> Q step(DSLContext dsl);
 }
