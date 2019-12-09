@@ -23,6 +23,7 @@ public class AuditableRecordListener extends DefaultRecordListener {
         this.currentUserProvider = currentUserProvider;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void insertStart(RecordContext ctx) {
         LocalDateTime now = LocalDateTime.now();
@@ -44,6 +45,7 @@ public class AuditableRecordListener extends DefaultRecordListener {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void updateStart(RecordContext ctx) {
         Record record = ctx.record();
