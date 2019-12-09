@@ -15,6 +15,7 @@ import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguratio
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.support.FormattingConversionService;
+import org.springframework.util.Assert;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -34,7 +35,10 @@ public class JooqRecordAutoConfiguration implements InitializingBean {
 
     @Autowired
     public JooqRecordAutoConfiguration(
-            List<ObjectMapper> objectMappers) {
+            @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
+                    List<ObjectMapper> objectMappers) {
+        Assert.notEmpty(objectMappers, () -> "ObjectMapper must be required");
+
         this.objectMappers = objectMappers;
     }
 
@@ -58,6 +62,7 @@ public class JooqRecordAutoConfiguration implements InitializingBean {
 
         public JooqRecordWebConfiguration(
                 BeanFactory beanFactory,
+                @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
                 @Qualifier("mvcConversionService") FormattingConversionService conversionService) {
             this.beanFactory = beanFactory;
             this.conversionService = conversionService;
