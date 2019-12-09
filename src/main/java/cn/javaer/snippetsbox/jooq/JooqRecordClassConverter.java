@@ -27,6 +27,7 @@ public class JooqRecordClassConverter<T extends ConversionService & ConverterReg
     private final T conversionService;
     private ToEntityConverter toEntityConverter;
     private ToIdConverter toIdConverter;
+    private static final Map<Class<?>, Class<?>> CACHE = new ConcurrentHashMap<>();
 
     JooqRecordClassConverter(T conversionService) {
         Assert.notNull(conversionService, "ConversionService must not be null!");
@@ -209,9 +210,7 @@ public class JooqRecordClassConverter<T extends ConversionService & ConverterReg
         return updatableRecord.getTable().getPrimaryKey().getFieldsArray()[0];
     }
 
-    private static final Map<Class<?>, Class<?>> cache = new ConcurrentHashMap<>();
-
     private Class<?> getIdClass(Class<?> recordType) {
-        return JooqRecordClassConverter.cache.computeIfAbsent(recordType, aClass -> newUpdatableRecord(aClass).getTable().getPrimaryKey().getFieldsArray()[0].getType());
+        return JooqRecordClassConverter.CACHE.computeIfAbsent(recordType, aClass -> newUpdatableRecord(aClass).getTable().getPrimaryKey().getFieldsArray()[0].getType());
     }
 }
