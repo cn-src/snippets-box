@@ -26,7 +26,8 @@ public class SfmJooqAutoConfiguration implements InitializingBean {
 
     @Autowired
     public SfmJooqAutoConfiguration(
-            List<org.jooq.Configuration> jooqConfigurations) {
+            @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
+                    List<org.jooq.Configuration> jooqConfigurations) {
         this.jooqConfigurations = jooqConfigurations;
     }
 
