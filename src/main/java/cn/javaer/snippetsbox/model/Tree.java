@@ -80,7 +80,7 @@ public class Tree {
      * @return 实体列表
      */
     @SafeVarargs
-    static <E, T> List<E> toModel(List<TreeNode<T>> treeNodes, Supplier<E> createFn, BiConsumer<E, T>... fns) {
+    public static <E, T> List<E> toModel(List<TreeNode<T>> treeNodes, Supplier<E> createFn, BiConsumer<E, T>... fns) {
         Objects.requireNonNull(createFn);
         Objects.requireNonNull(fns);
 
