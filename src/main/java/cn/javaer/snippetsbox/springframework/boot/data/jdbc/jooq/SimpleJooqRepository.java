@@ -149,6 +149,7 @@ public class SimpleJooqRepository<T, ID> implements JooqRepository<T, ID> {
     @Transactional
     @Override
     public void deleteAll(Iterable<? extends T> entities) {
+        //noinspection unchecked
         entities.forEach(it -> entityOperations.delete(it, (Class<T>) it.getClass()));
     }
 
