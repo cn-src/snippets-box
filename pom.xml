@@ -18,6 +18,7 @@
         <eclipse-collections.version>10.1.0</eclipse-collections.version>
         <spring-boot.version>2.2.2.RELEASE</spring-boot.version>
         <simpleflatmapper.version>8.2.1</simpleflatmapper.version>
+        <kryo.version>5.0.0-RC4</kryo.version>
     </properties>
 
     <dependencies>
@@ -48,6 +49,13 @@
             <groupId>org.eclipse.collections</groupId>
             <artifactId>eclipse-collections</artifactId>
             <version>${eclipse-collections.version}</version>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>com.esotericsoftware</groupId>
+            <artifactId>kryo</artifactId>
+            <version>${kryo.version}</version>
             <optional>true</optional>
         </dependency>
 
