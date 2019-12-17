@@ -19,6 +19,7 @@
         <spring-boot.version>2.2.2.RELEASE</spring-boot.version>
         <simpleflatmapper.version>8.2.1</simpleflatmapper.version>
         <kryo.version>5.0.0-RC4</kryo.version>
+        <classgraph.version>4.8.58</classgraph.version>
     </properties>
 
     <dependencies>
@@ -57,6 +58,11 @@
             <artifactId>kryo</artifactId>
             <version>${kryo.version}</version>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>io.github.classgraph</groupId>
+            <artifactId>classgraph</artifactId>
+            <version>${classgraph.version}</version>
         </dependency>
 
         <dependency>
