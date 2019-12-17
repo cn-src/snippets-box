@@ -56,5 +56,17 @@ public class DemoController {
 * 分页排序 `PagingAndSortingRepository` 接口的支持
 * 样例查询 `QueryByExampleExecutor` 接口的支持
 
+## Kryo
+* Kryo [池化封装](https://github.com/EsotericSoftware/kryo#pooling)
+```java
+KryoHelper kryoHelper = new KryoHelper(kryo -> {
+    kryo.register(User.class);
+});
+
+byte[] bytes = kryoHelper.writeClassAndObject(user);
+
+User user = kryoHelper.readClassAndObject(bytes);
+```  
+
 ## 数据结构
 * Tree 结构，主要用于前端的 Tree 类型组件所需的数据结构，用于"**二维表结构 <==> 树结构**"之间转换
