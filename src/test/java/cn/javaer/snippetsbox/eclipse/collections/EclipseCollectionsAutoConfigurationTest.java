@@ -21,8 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Tests for {@link JdbcRepositoriesAutoConfiguration}.
  *
- * @author Andy Wilkinson
- * @author Stephane Nicoll
+ * @author cn-src
  */
 class EclipseCollectionsAutoConfigurationTest {
 
@@ -32,13 +31,13 @@ class EclipseCollectionsAutoConfigurationTest {
 
     @Test
     void basicAutoConfiguration() {
-        contextRunner.withUserConfiguration(DataSourceConfiguration.class, EclipseCollectionsAutoConfiguration.class)
+        this.contextRunner.withUserConfiguration(DataSourceConfiguration.class, EclipseCollectionsAutoConfiguration.class)
                 .run(context -> {
                     assertThat(context).hasSingleBean(CityRepository.class);
-                    JdbcTemplate jdbcTemplate = context.getBean(JdbcTemplate.class);
+                    final JdbcTemplate jdbcTemplate = context.getBean(JdbcTemplate.class);
                     jdbcTemplate.execute("CREATE TABLE city ( id  INTEGER IDENTITY PRIMARY KEY, name VARCHAR(30) )");
 
-                    CityRepository cityRepository = context.getBean(CityRepository.class);
+                    final CityRepository cityRepository = context.getBean(CityRepository.class);
                     cityRepository.save(new City("name"));
                     assertThat(cityRepository.findAll()).hasSize(1);
                 });
