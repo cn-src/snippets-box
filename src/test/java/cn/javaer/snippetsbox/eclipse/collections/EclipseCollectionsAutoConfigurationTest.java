@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jdbc.repository.config.EnableJdbcRepositories;
+import org.springframework.data.jdbc.repository.support.JdbcRepositoryFactoryBean;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
@@ -44,7 +45,8 @@ class EclipseCollectionsAutoConfigurationTest {
     }
 
     @Configuration(proxyBeanMethods = false)
-    @EnableJdbcRepositories(basePackageClasses = City.class)
+    // TODO repositoryFactoryBeanClass 不指定会无法注册 CityRepository
+    @EnableJdbcRepositories(repositoryFactoryBeanClass = JdbcRepositoryFactoryBean.class, basePackageClasses = City.class)
     static class DataSourceConfiguration {
 
         @Bean
