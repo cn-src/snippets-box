@@ -43,7 +43,7 @@ public class JooqRepositoryFactory extends JdbcRepositoryFactory {
         final JdbcAggregateTemplate template = new JdbcAggregateTemplate(this.publisher, this.context, this.converter, this.accessStrategy);
 
         final SimpleJooqRepository<?, Object> repository = new SimpleJooqRepository<>(this.dsl, template,
-                this.context.getRequiredPersistentEntity(repositoryInformation.getDomainType()));
+                this.context.getRequiredPersistentEntity(repositoryInformation.getDomainType()), this.operations);
 
         if (this.entityCallbacks != null) {
             template.setEntityCallbacks(this.entityCallbacks);

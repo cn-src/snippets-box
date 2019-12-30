@@ -21,6 +21,7 @@ import org.springframework.data.jdbc.core.JdbcAggregateOperations;
 import org.springframework.data.relational.core.mapping.RelationalPersistentEntity;
 import org.springframework.data.util.Streamable;
 import org.springframework.jdbc.InvalidResultSetAccessException;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.ResultSet;
@@ -37,17 +38,19 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class SimpleJooqRepository<T, ID> extends AbstractJooqRepository<T, ID> implements JooqRepository<T, ID> {
 
-    private final JdbcAggregateOperations entityOperations;
+    private final Class<T> type;
     private final JdbcMapper<T> jdbcMapper;
     private final SelectQueryMapper<T> queryMapper;
-    private final Class<T> type;
+    private final JdbcAggregateOperations entityOperations;
+    private final NamedParameterJdbcOperations jdbcOperations;
 
-    public SimpleJooqRepository(final DSLContext dsl, final JdbcAggregateOperations entityOperations, final RelationalPersistentEntity<T> persistentEntity) {
+    public SimpleJooqRepository(final DSLContext dsl, final JdbcAggregateOperations entityOperations, final RelationalPersistentEntity<T> persistentEntity, final NamedParameterJdbcOperations jdbcOperations) {
         super(dsl, persistentEntity);
         this.type = persistentEntity.getType();
         this.entityOperations = entityOperations;
         this.jdbcMapper = JdbcMapperFactory.newInstance().ignorePropertyNotFound().newMapper(persistentEntity.getType());
         this.queryMapper = SelectQueryMapperFactory.newInstance().ignorePropertyNotFound().newMapper(persistentEntity.getType());
+        this.jdbcOperations = jdbcOperations;
     }
 
     /**
