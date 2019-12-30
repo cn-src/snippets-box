@@ -7,8 +7,6 @@ import org.jooq.Record1;
 import org.jooq.ResultQuery;
 import org.jooq.SelectConditionStep;
 import org.jooq.SelectWhereStep;
-import org.jooq.Table;
-import org.jooq.impl.DSL;
 import org.simpleflatmapper.jdbc.JdbcMapper;
 import org.simpleflatmapper.jdbc.JdbcMapperFactory;
 import org.simpleflatmapper.jooq.SelectQueryMapper;
@@ -39,23 +37,17 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class SimpleJooqRepository<T, ID> extends AbstractJooqRepository<T, ID> implements JooqRepository<T, ID> {
 
-    private final DSLContext dsl;
     private final JdbcAggregateOperations entityOperations;
     private final JdbcMapper<T> jdbcMapper;
     private final SelectQueryMapper<T> queryMapper;
-    private final RelationalPersistentEntity<?> persistentEntity;
     private final Class<T> type;
-    private final Table<Record> table;
 
     public SimpleJooqRepository(final DSLContext dsl, final JdbcAggregateOperations entityOperations, final RelationalPersistentEntity<T> persistentEntity) {
         super(dsl, persistentEntity);
         this.type = persistentEntity.getType();
-        this.table = DSL.table(persistentEntity.getTableName());
-        this.dsl = dsl;
         this.entityOperations = entityOperations;
         this.jdbcMapper = JdbcMapperFactory.newInstance().ignorePropertyNotFound().newMapper(persistentEntity.getType());
         this.queryMapper = SelectQueryMapperFactory.newInstance().ignorePropertyNotFound().newMapper(persistentEntity.getType());
-        this.persistentEntity = persistentEntity;
     }
 
     /**
