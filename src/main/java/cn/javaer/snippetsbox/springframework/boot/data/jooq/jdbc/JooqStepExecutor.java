@@ -1,4 +1,4 @@
-package cn.javaer.snippetsbox.springframework.boot.data.jdbc.jooq;
+package cn.javaer.snippetsbox.springframework.boot.data.jooq.jdbc;
 
 import java.util.List;
 import java.util.Optional;

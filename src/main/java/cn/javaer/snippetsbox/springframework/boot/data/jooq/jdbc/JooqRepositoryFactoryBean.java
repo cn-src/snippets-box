@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package cn.javaer.snippetsbox.springframework.boot.data.jdbc.jooq;
+package cn.javaer.snippetsbox.springframework.boot.data.jooq.jdbc;
 
 import org.jooq.DSLContext;
 import org.springframework.beans.factory.BeanFactory;
@@ -63,7 +63,7 @@ public class JooqRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extend
      *
      * @param repositoryInterface must not be {@literal null}.
      */
-    protected JooqRepositoryFactoryBean(Class<? extends T> repositoryInterface) {
+    protected JooqRepositoryFactoryBean(final Class<? extends T> repositoryInterface) {
         super(repositoryInterface);
     }
 
@@ -72,7 +72,7 @@ public class JooqRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extend
      * @see org.springframework.data.repository.core.support.RepositoryFactoryBeanSupport#setApplicationEventPublisher(org.springframework.context.ApplicationEventPublisher)
      */
     @Override
-    public void setApplicationEventPublisher(ApplicationEventPublisher publisher) {
+    public void setApplicationEventPublisher(final ApplicationEventPublisher publisher) {
 
         super.setApplicationEventPublisher(publisher);
 
@@ -85,16 +85,16 @@ public class JooqRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extend
     @Override
     protected RepositoryFactorySupport doCreateRepositoryFactory() {
 
-        JooqRepositoryFactory jooqRepositoryFactory = new JooqRepositoryFactory(dataAccessStrategy, mappingContext,
-                converter, publisher, operations, beanFactory.getBean(DSLContext.class));
-        jooqRepositoryFactory.setQueryMappingConfiguration(queryMappingConfiguration);
-        jooqRepositoryFactory.setEntityCallbacks(entityCallbacks);
+        final JooqRepositoryFactory jooqRepositoryFactory = new JooqRepositoryFactory(this.dataAccessStrategy, this.mappingContext,
+                this.converter, this.publisher, this.operations, this.beanFactory.getBean(DSLContext.class));
+        jooqRepositoryFactory.setQueryMappingConfiguration(this.queryMappingConfiguration);
+        jooqRepositoryFactory.setEntityCallbacks(this.entityCallbacks);
 
         return jooqRepositoryFactory;
     }
 
     @Autowired
-    protected void setMappingContext(RelationalMappingContext mappingContext) {
+    protected void setMappingContext(final RelationalMappingContext mappingContext) {
 
         super.setMappingContext(mappingContext);
         this.mappingContext = mappingContext;
@@ -103,7 +103,7 @@ public class JooqRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extend
     /**
      * @param dataAccessStrategy can be {@literal null}.
      */
-    public void setDataAccessStrategy(DataAccessStrategy dataAccessStrategy) {
+    public void setDataAccessStrategy(final DataAccessStrategy dataAccessStrategy) {
         this.dataAccessStrategy = dataAccessStrategy;
     }
 
@@ -112,7 +112,7 @@ public class JooqRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extend
      *         {@link QueryMappingConfiguration#EMPTY} if {@literal null}.
      */
     @Autowired(required = false)
-    public void setQueryMappingConfiguration(QueryMappingConfiguration queryMappingConfiguration) {
+    public void setQueryMappingConfiguration(final QueryMappingConfiguration queryMappingConfiguration) {
         this.queryMappingConfiguration = queryMappingConfiguration;
     }
 
@@ -124,21 +124,21 @@ public class JooqRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extend
      */
     @Deprecated
     @Autowired(required = false)
-    public void setRowMapperMap(RowMapperMap rowMapperMap) {
-        setQueryMappingConfiguration(rowMapperMap);
+    public void setRowMapperMap(final RowMapperMap rowMapperMap) {
+        this.setQueryMappingConfiguration(rowMapperMap);
     }
 
-    public void setJdbcOperations(NamedParameterJdbcOperations operations) {
+    public void setJdbcOperations(final NamedParameterJdbcOperations operations) {
         this.operations = operations;
     }
 
     @Autowired
-    public void setConverter(JdbcConverter converter) {
+    public void setConverter(final JdbcConverter converter) {
         this.converter = converter;
     }
 
     @Override
-    public void setBeanFactory(BeanFactory beanFactory) {
+    public void setBeanFactory(final BeanFactory beanFactory) {
 
         super.setBeanFactory(beanFactory);
 
@@ -152,35 +152,35 @@ public class JooqRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extend
     @Override
     public void afterPropertiesSet() {
 
-        Assert.state(mappingContext != null, "MappingContext is required and must not be null!");
-        Assert.state(converter != null, "RelationalConverter is required and must not be null!");
+        Assert.state(this.mappingContext != null, "MappingContext is required and must not be null!");
+        Assert.state(this.converter != null, "RelationalConverter is required and must not be null!");
 
-        if (operations == null) {
+        if (this.operations == null) {
 
-            Assert.state(beanFactory != null, "If no JdbcOperations are set a BeanFactory must be available.");
+            Assert.state(this.beanFactory != null, "If no JdbcOperations are set a BeanFactory must be available.");
 
-            operations = beanFactory.getBean(NamedParameterJdbcOperations.class);
+            this.operations = this.beanFactory.getBean(NamedParameterJdbcOperations.class);
         }
 
-        if (dataAccessStrategy == null) {
+        if (this.dataAccessStrategy == null) {
 
-            Assert.state(beanFactory != null, "If no DataAccessStrategy is set a BeanFactory must be available.");
+            Assert.state(this.beanFactory != null, "If no DataAccessStrategy is set a BeanFactory must be available.");
 
-            dataAccessStrategy = beanFactory.getBeanProvider(DataAccessStrategy.class)
+            this.dataAccessStrategy = this.beanFactory.getBeanProvider(DataAccessStrategy.class)
                     .getIfAvailable(() -> {
 
-                        SqlGeneratorSource sqlGeneratorSource = new SqlGeneratorSource(mappingContext);
-                        return new DefaultDataAccessStrategy(sqlGeneratorSource, mappingContext, converter,
-                                operations);
+                        final SqlGeneratorSource sqlGeneratorSource = new SqlGeneratorSource(this.mappingContext);
+                        return new DefaultDataAccessStrategy(sqlGeneratorSource, this.mappingContext, this.converter,
+                                this.operations);
                     });
         }
 
-        if (queryMappingConfiguration == null) {
-            queryMappingConfiguration = QueryMappingConfiguration.EMPTY;
+        if (this.queryMappingConfiguration == null) {
+            this.queryMappingConfiguration = QueryMappingConfiguration.EMPTY;
         }
 
-        if (beanFactory != null) {
-            entityCallbacks = EntityCallbacks.create(beanFactory);
+        if (this.beanFactory != null) {
+            this.entityCallbacks = EntityCallbacks.create(this.beanFactory);
         }
 
         super.afterPropertiesSet();

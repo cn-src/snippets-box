@@ -1,7 +1,7 @@
-package cn.javaer.snippetsbox.springframework.boot.data.jdbc.jooq;
+package cn.javaer.snippetsbox.springframework.boot.data.jooq.jdbc;
 
-import cn.javaer.snippetsbox.springframework.boot.data.jdbc.jooq.user.User;
-import cn.javaer.snippetsbox.springframework.boot.data.jdbc.jooq.user.UserRepository;
+import cn.javaer.snippetsbox.springframework.boot.data.jooq.jdbc.user.User;
+import cn.javaer.snippetsbox.springframework.boot.data.jooq.jdbc.user.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.data.jdbc.JdbcRepositoriesAutoConfiguration;

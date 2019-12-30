@@ -1,4 +1,4 @@
-package cn.javaer.snippetsbox.springframework.boot.data.jdbc.jooq;
+package cn.javaer.snippetsbox.springframework.boot.data.jooq.jdbc;
 
 import org.jooq.DSLContext;
 import org.springframework.context.ApplicationEventPublisher;
@@ -27,39 +27,39 @@ public class JooqRepositoryFactory extends JdbcRepositoryFactory {
 
     private final DSLContext dsl;
 
-    JooqRepositoryFactory(DataAccessStrategy dataAccessStrategy, RelationalMappingContext context, JdbcConverter converter, ApplicationEventPublisher publisher, NamedParameterJdbcOperations operations, DSLContext dsl) {
+    JooqRepositoryFactory(final DataAccessStrategy dataAccessStrategy, final RelationalMappingContext context, final JdbcConverter converter, final ApplicationEventPublisher publisher, final NamedParameterJdbcOperations operations, final DSLContext dsl) {
         super(dataAccessStrategy, context, converter, publisher, operations);
         this.publisher = publisher;
         this.context = context;
         this.converter = converter;
-        accessStrategy = dataAccessStrategy;
+        this.accessStrategy = dataAccessStrategy;
 
         this.dsl = dsl;
     }
 
     @Override
-    protected Object getTargetRepository(RepositoryInformation repositoryInformation) {
+    protected Object getTargetRepository(final RepositoryInformation repositoryInformation) {
 
-        JdbcAggregateTemplate template = new JdbcAggregateTemplate(publisher, context, converter, accessStrategy);
+        final JdbcAggregateTemplate template = new JdbcAggregateTemplate(this.publisher, this.context, this.converter, this.accessStrategy);
 
-        SimpleJooqRepository<?, Object> repository = new SimpleJooqRepository<>(template,
-                context.getRequiredPersistentEntity(repositoryInformation.getDomainType()),
-                dsl, context);
+        final SimpleJooqRepository<?, Object> repository = new SimpleJooqRepository<>(template,
+                this.context.getRequiredPersistentEntity(repositoryInformation.getDomainType()),
+                this.dsl, this.context);
 
-        if (entityCallbacks != null) {
-            template.setEntityCallbacks(entityCallbacks);
+        if (this.entityCallbacks != null) {
+            template.setEntityCallbacks(this.entityCallbacks);
         }
 
         return repository;
     }
 
     @Override
-    public void setEntityCallbacks(EntityCallbacks entityCallbacks) {
+    public void setEntityCallbacks(final EntityCallbacks entityCallbacks) {
         this.entityCallbacks = entityCallbacks;
     }
 
     @Override
-    protected Class<?> getRepositoryBaseClass(RepositoryMetadata repositoryMetadata) {
+    protected Class<?> getRepositoryBaseClass(final RepositoryMetadata repositoryMetadata) {
         return SimpleJooqRepository.class;
     }
 }

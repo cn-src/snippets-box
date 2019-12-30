@@ -1,4 +1,4 @@
-package cn.javaer.snippetsbox.springframework.boot.data.jdbc.jooq;
+package cn.javaer.snippetsbox.springframework.boot.data.jooq.jdbc;
 
 import org.jooq.Condition;
 import org.jooq.DSLContext;

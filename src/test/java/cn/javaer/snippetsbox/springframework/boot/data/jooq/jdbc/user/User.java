@@ -1,4 +1,4 @@
-package cn.javaer.snippetsbox.springframework.boot.data.jdbc.jooq.user;
+package cn.javaer.snippetsbox.springframework.boot.data.jooq.jdbc.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
