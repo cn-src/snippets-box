@@ -1,10 +1,13 @@
 package cn.javaer.snippetsbox.eclipse.collections;
 
+import cn.javaer.snippetsbox.TestAutoConfigurationPackage;
 import cn.javaer.snippetsbox.eclipse.collections.city.City;
 import cn.javaer.snippetsbox.eclipse.collections.city.CityRepository;
+import cn.javaer.snippetsbox.empty.EmptyDataPackage;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.data.jdbc.JdbcRepositoriesAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -12,7 +15,6 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jdbc.repository.config.EnableJdbcRepositories;
-import org.springframework.data.jdbc.repository.support.JdbcRepositoryFactoryBean;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
@@ -27,12 +29,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 class EclipseCollectionsAutoConfigurationTest {
 
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-            .withConfiguration(AutoConfigurations.of(JdbcTemplateAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class, JdbcRepositoriesAutoConfiguration.class))
+            .withConfiguration(AutoConfigurations.of(EclipseCollectionsAutoConfiguration.class))
             .withPropertyValues("spring.datasource.name:test");
 
     @Test
     void basicAutoConfiguration() {
-        this.contextRunner.withUserConfiguration(DataSourceConfiguration.class, EclipseCollectionsAutoConfiguration.class)
+        this.contextRunner.withConfiguration(AutoConfigurations.of(
+                DataSourceAutoConfiguration.class,
+                JdbcTemplateAutoConfiguration.class,
+                DataSourceTransactionManagerAutoConfiguration.class,
+                JdbcRepositoriesAutoConfiguration.class))
+                .withUserConfiguration(DataSourceConfiguration.class)
                 .run(context -> {
                     assertThat(context).hasSingleBean(CityRepository.class);
                     final JdbcTemplate jdbcTemplate = context.getBean(JdbcTemplate.class);
@@ -45,8 +52,8 @@ class EclipseCollectionsAutoConfigurationTest {
     }
 
     @Configuration(proxyBeanMethods = false)
-    // TODO repositoryFactoryBeanClass 不指定会无法注册 CityRepository
-    @EnableJdbcRepositories(repositoryFactoryBeanClass = JdbcRepositoryFactoryBean.class, basePackageClasses = City.class)
+    @TestAutoConfigurationPackage(EmptyDataPackage.class)
+    @EnableJdbcRepositories(basePackageClasses = City.class)
     static class DataSourceConfiguration {
 
         @Bean

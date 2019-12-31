@@ -2,8 +2,10 @@ package cn.javaer.snippetsbox.eclipse.collections.city;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
 @Data
+@Table
 public class City {
 
     @Id
@@ -14,7 +16,7 @@ public class City {
     protected City() {
     }
 
-    public City(String name) {
+    public City(final String name) {
         this.name = name;
     }
 }
