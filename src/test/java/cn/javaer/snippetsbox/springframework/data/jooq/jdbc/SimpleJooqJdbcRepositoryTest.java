@@ -1,10 +1,11 @@
 package cn.javaer.snippetsbox.springframework.data.jooq.jdbc;
 
+import cn.javaer.snippetsbox.springframework.data.jooq.jdbc.config.EnableJooqJdbcRepositories;
+import cn.javaer.snippetsbox.springframework.data.jooq.jdbc.config.JooqJdbcRepositoriesAutoConfiguration;
 import cn.javaer.snippetsbox.springframework.data.jooq.jdbc.user.User;
 import cn.javaer.snippetsbox.springframework.data.jooq.jdbc.user.UserJdbcRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.data.jdbc.JdbcRepositoriesAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
 import org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration;
@@ -17,8 +18,6 @@ import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration;
-import org.springframework.data.jdbc.repository.config.EnableJdbcRepositories;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
@@ -32,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class SimpleJooqJdbcRepositoryTest {
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-            .withConfiguration(AutoConfigurations.of(JooqAutoConfiguration.class, JdbcTemplateAutoConfiguration.class, JdbcRepositoriesAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class))
+            .withConfiguration(AutoConfigurations.of(JooqJdbcRepositoriesAutoConfiguration.class, JooqAutoConfiguration.class, JdbcTemplateAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class))
             .withPropertyValues("spring.datasource.name:test");
 
     @Test
@@ -63,8 +62,8 @@ class SimpleJooqJdbcRepositoryTest {
     }
 
     @Configuration(proxyBeanMethods = false)
-    @EnableJdbcRepositories(repositoryFactoryBeanClass = JooqJdbcRepositoryFactoryBean.class, basePackageClasses = User.class)
-    static class DataSourceConfiguration extends AbstractJdbcConfiguration {
+    @EnableJooqJdbcRepositories(basePackageClasses = User.class)
+    static class DataSourceConfiguration {
         @Bean
         DataSource dataSource() {
             return DataSourceBuilder.create().url("jdbc:h2:mem:test").username("sa").build();

@@ -16,6 +16,7 @@
 
 package cn.javaer.snippetsbox.springframework.data.jooq.jdbc.config;
 
+import org.jooq.DSLContext;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -26,7 +27,6 @@ import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration;
-import org.springframework.data.jdbc.repository.config.JdbcConfiguration;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -34,10 +34,9 @@ import org.springframework.transaction.PlatformTransactionManager;
  * @author cn-src
  * @see EnableJooqJdbcRepositories
  */
-@SuppressWarnings("deprecation")
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnBean({NamedParameterJdbcOperations.class, PlatformTransactionManager.class})
-@ConditionalOnClass({NamedParameterJdbcOperations.class, AbstractJdbcConfiguration.class})
+@ConditionalOnClass({DSLContext.class, NamedParameterJdbcOperations.class, AbstractJdbcConfiguration.class})
 @ConditionalOnProperty(prefix = "spring.data.jooq.jdbc.repositories", name = "enabled", havingValue = "true",
         matchIfMissing = true)
 @AutoConfigureAfter({JdbcTemplateAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class})
@@ -51,7 +50,7 @@ public class JooqJdbcRepositoriesAutoConfiguration {
     }
 
     @Configuration
-    @ConditionalOnMissingBean({AbstractJdbcConfiguration.class, JdbcConfiguration.class})
+    @ConditionalOnMissingBean({AbstractJdbcConfiguration.class})
     static class SpringBootJooqJdbcConfiguration extends AbstractJdbcConfiguration {
 
     }
