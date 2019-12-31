@@ -1,4 +1,4 @@
-package cn.javaer.snippetsbox.springframework.boot.data.jooq.jdbc;
+package cn.javaer.snippetsbox.springframework.data.jooq.jdbc;
 
 import java.util.List;
 import java.util.Optional;
@@ -6,7 +6,7 @@ import java.util.Optional;
 /**
  * @author cn-src
  */
-public interface JooqStepExecutor<T> {
+public interface JooqJdbcStepExecutor<T> {
 
     Optional<T> findOne(QueryStep queryStep);
 

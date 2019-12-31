@@ -1,4 +1,4 @@
-package cn.javaer.snippetsbox.springframework.boot.data.jooq.jdbc.user;
+package cn.javaer.snippetsbox.springframework.data.jooq.jdbc.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,7 +21,7 @@ public class User {
 
     private String gender;
 
-    public User(String name, String gender) {
+    public User(final String name, final String gender) {
         this.name = name;
         this.gender = gender;
     }

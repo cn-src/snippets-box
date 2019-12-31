@@ -1,4 +1,4 @@
-package cn.javaer.snippetsbox.springframework.boot.data.jooq.jdbc;
+package cn.javaer.snippetsbox.springframework.data.jooq.jdbc;
 
 import org.jooq.DSLContext;
 import org.springframework.context.ApplicationEventPublisher;
@@ -18,7 +18,7 @@ import org.springframework.util.Assert;
  *
  * @author cn-src
  */
-public class JooqRepositoryFactory extends JdbcRepositoryFactory {
+public class JooqJdbcRepositoryFactory extends JdbcRepositoryFactory {
 
     private final RelationalMappingContext context;
     private final JdbcConverter converter;
@@ -30,9 +30,9 @@ public class JooqRepositoryFactory extends JdbcRepositoryFactory {
 
     private final DSLContext dslContext;
 
-    public JooqRepositoryFactory(final DataAccessStrategy dataAccessStrategy, final RelationalMappingContext context,
-                                 final JdbcConverter converter, final ApplicationEventPublisher publisher,
-                                 final NamedParameterJdbcOperations operations, final DSLContext dslContext) {
+    public JooqJdbcRepositoryFactory(final DataAccessStrategy dataAccessStrategy, final RelationalMappingContext context,
+                                     final JdbcConverter converter, final ApplicationEventPublisher publisher,
+                                     final NamedParameterJdbcOperations operations, final DSLContext dslContext) {
 
         super(dataAccessStrategy, context, converter, publisher, operations);
         Assert.notNull(dslContext, "DSLContext must not be null!");
@@ -50,7 +50,7 @@ public class JooqRepositoryFactory extends JdbcRepositoryFactory {
 
         final JdbcAggregateTemplate template = new JdbcAggregateTemplate(this.publisher, this.context, this.converter, this.accessStrategy);
 
-        final SimpleJooqRepository<?, Object> repository = new SimpleJooqRepository<>(
+        final SimpleJooqJdbcRepository<?, Object> repository = new SimpleJooqJdbcRepository<>(
                 this.dslContext, this.context,
                 this.context.getRequiredPersistentEntity(repositoryInformation.getDomainType()),
                 template, this.operations, this.converter
@@ -65,7 +65,7 @@ public class JooqRepositoryFactory extends JdbcRepositoryFactory {
 
     @Override
     protected Class<?> getRepositoryBaseClass(final RepositoryMetadata repositoryMetadata) {
-        return SimpleJooqRepository.class;
+        return SimpleJooqJdbcRepository.class;
     }
 
     @Override

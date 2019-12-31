@@ -1,6 +1,6 @@
-package cn.javaer.snippetsbox.springframework.boot.data.jooq.jdbc;
+package cn.javaer.snippetsbox.springframework.data.jooq.jdbc;
 
-import cn.javaer.snippetsbox.springframework.boot.data.jooq.AbstractJooqRepository;
+import cn.javaer.snippetsbox.springframework.data.jooq.AbstractJooqRepository;
 import org.jooq.DSLContext;
 import org.jooq.Query;
 import org.simpleflatmapper.jooq.SelectQueryMapper;
@@ -27,12 +27,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Default implementation of the {@link JooqRepository} interface.
+ * Default implementation of the {@link JooqJdbcRepository} interface.
  *
  * @author cn-src
  */
 @Transactional(readOnly = true)
-public class SimpleJooqRepository<T, ID> extends AbstractJooqRepository<T, ID> implements JooqRepository<T, ID> {
+public class SimpleJooqJdbcRepository<T, ID> extends AbstractJooqRepository<T, ID> implements JooqJdbcRepository<T, ID> {
 
     private final SelectQueryMapper<T> queryMapper;
     private final JdbcAggregateOperations entityOperations;
@@ -41,12 +41,12 @@ public class SimpleJooqRepository<T, ID> extends AbstractJooqRepository<T, ID> i
     private final Class<T> repositoryEntityClass;
     private final EntityRowMapper<T> repositoryEntityRowMapper;
 
-    public SimpleJooqRepository(final DSLContext dsl,
-                                final RelationalMappingContext context,
-                                final RelationalPersistentEntity<T> persistentEntity,
-                                final JdbcAggregateOperations entityOperations,
-                                final NamedParameterJdbcOperations jdbcOperations,
-                                final JdbcConverter jdbcConverter) {
+    public SimpleJooqJdbcRepository(final DSLContext dsl,
+                                    final RelationalMappingContext context,
+                                    final RelationalPersistentEntity<T> persistentEntity,
+                                    final JdbcAggregateOperations entityOperations,
+                                    final NamedParameterJdbcOperations jdbcOperations,
+                                    final JdbcConverter jdbcConverter) {
         super(dsl, persistentEntity, context);
         this.entityOperations = entityOperations;
         this.jdbcConverter = jdbcConverter;

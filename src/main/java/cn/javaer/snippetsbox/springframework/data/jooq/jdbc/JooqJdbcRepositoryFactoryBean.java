@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package cn.javaer.snippetsbox.springframework.boot.data.jooq.jdbc;
+package cn.javaer.snippetsbox.springframework.data.jooq.jdbc;
 
 import org.jooq.DSLContext;
 import org.springframework.beans.factory.BeanFactory;
@@ -36,7 +36,7 @@ import java.io.Serializable;
  *
  * @author cn-src
  */
-public class JooqRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extends Serializable> extends JdbcRepositoryFactoryBean<T, S, ID> {
+public class JooqJdbcRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extends Serializable> extends JdbcRepositoryFactoryBean<T, S, ID> {
 
     private ApplicationEventPublisher publisher;
     private BeanFactory beanFactory;
@@ -48,13 +48,13 @@ public class JooqRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extend
     private EntityCallbacks entityCallbacks;
     private DSLContext dslContext;
 
-    protected JooqRepositoryFactoryBean(final Class<? extends T> repositoryInterface) {
+    protected JooqJdbcRepositoryFactoryBean(final Class<? extends T> repositoryInterface) {
         super(repositoryInterface);
     }
 
     @Override
     protected RepositoryFactorySupport doCreateRepositoryFactory() {
-        final JooqRepositoryFactory jdbcRepositoryFactory = new JooqRepositoryFactory(this.dataAccessStrategy, this.mappingContext,
+        final JooqJdbcRepositoryFactory jdbcRepositoryFactory = new JooqJdbcRepositoryFactory(this.dataAccessStrategy, this.mappingContext,
                 this.converter, this.publisher, this.operations, this.dslContext);
         jdbcRepositoryFactory.setQueryMappingConfiguration(this.queryMappingConfiguration);
         jdbcRepositoryFactory.setEntityCallbacks(this.entityCallbacks);
