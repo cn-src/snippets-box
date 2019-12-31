@@ -19,7 +19,6 @@ package cn.javaer.snippetsbox.springframework.data.jooq.jdbc.config;
 import org.springframework.boot.autoconfigure.data.AbstractRepositoryConfigurationSourceSupport;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.data.jdbc.repository.config.EnableJdbcRepositories;
-import org.springframework.data.jdbc.repository.config.JdbcRepositoryConfigExtension;
 import org.springframework.data.repository.config.RepositoryConfigurationExtension;
 
 import java.lang.annotation.Annotation;
@@ -44,7 +43,7 @@ class JdbcRepositoriesRegistrar extends AbstractRepositoryConfigurationSourceSup
 
     @Override
     protected RepositoryConfigurationExtension getRepositoryConfigurationExtension() {
-        return new JdbcRepositoryConfigExtension();
+        return new JooqJdbcRepositoryConfigExtension();
     }
 
     @EnableJdbcRepositories
