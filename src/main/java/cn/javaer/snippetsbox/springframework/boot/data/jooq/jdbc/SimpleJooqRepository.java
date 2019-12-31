@@ -2,15 +2,10 @@ package cn.javaer.snippetsbox.springframework.boot.data.jooq.jdbc;
 
 import cn.javaer.snippetsbox.springframework.boot.data.jooq.AbstractJooqRepository;
 import org.jooq.DSLContext;
-import org.jooq.Record;
-import org.jooq.Record1;
-import org.jooq.ResultQuery;
-import org.jooq.SelectConditionStep;
-import org.jooq.SelectWhereStep;
-import org.simpleflatmapper.jdbc.JdbcMapper;
-import org.simpleflatmapper.jdbc.JdbcMapperFactory;
+import org.jooq.Query;
 import org.simpleflatmapper.jooq.SelectQueryMapper;
 import org.simpleflatmapper.jooq.SelectQueryMapperFactory;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
@@ -18,14 +13,15 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jdbc.core.JdbcAggregateOperations;
+import org.springframework.data.jdbc.core.convert.EntityRowMapper;
+import org.springframework.data.jdbc.core.convert.JdbcConverter;
+import org.springframework.data.relational.core.mapping.RelationalMappingContext;
 import org.springframework.data.relational.core.mapping.RelationalPersistentEntity;
 import org.springframework.data.util.Streamable;
-import org.springframework.jdbc.InvalidResultSetAccessException;
+import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -38,19 +34,26 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class SimpleJooqRepository<T, ID> extends AbstractJooqRepository<T, ID> implements JooqRepository<T, ID> {
 
-    private final Class<T> type;
-    private final JdbcMapper<T> jdbcMapper;
     private final SelectQueryMapper<T> queryMapper;
     private final JdbcAggregateOperations entityOperations;
-    private final NamedParameterJdbcOperations jdbcOperations;
+    private final JdbcOperations jdbcOperations;
+    private final JdbcConverter jdbcConverter;
+    private final Class<T> repositoryEntityClass;
+    private final EntityRowMapper<T> repositoryEntityRowMapper;
 
-    public SimpleJooqRepository(final DSLContext dsl, final JdbcAggregateOperations entityOperations, final RelationalPersistentEntity<T> persistentEntity, final NamedParameterJdbcOperations jdbcOperations) {
-        super(dsl, persistentEntity);
-        this.type = persistentEntity.getType();
+    public SimpleJooqRepository(final DSLContext dsl,
+                                final RelationalMappingContext context,
+                                final RelationalPersistentEntity<T> persistentEntity,
+                                final JdbcAggregateOperations entityOperations,
+                                final NamedParameterJdbcOperations jdbcOperations,
+                                final JdbcConverter jdbcConverter) {
+        super(dsl, persistentEntity, context);
         this.entityOperations = entityOperations;
-        this.jdbcMapper = JdbcMapperFactory.newInstance().ignorePropertyNotFound().newMapper(persistentEntity.getType());
+        this.jdbcConverter = jdbcConverter;
+        this.jdbcOperations = jdbcOperations.getJdbcOperations();
         this.queryMapper = SelectQueryMapperFactory.newInstance().ignorePropertyNotFound().newMapper(persistentEntity.getType());
-        this.jdbcOperations = jdbcOperations;
+        this.repositoryEntityClass = persistentEntity.getType();
+        this.repositoryEntityRowMapper = new EntityRowMapper<>(persistentEntity, jdbcConverter);
     }
 
     /**
@@ -79,7 +82,7 @@ public class SimpleJooqRepository<T, ID> extends AbstractJooqRepository<T, ID> i
      */
     @Override
     public Optional<T> findById(final ID id) {
-        return Optional.ofNullable(this.entityOperations.findById(id, this.type));
+        return Optional.ofNullable(this.entityOperations.findById(id, this.repositoryEntityClass));
     }
 
     /**
@@ -87,7 +90,7 @@ public class SimpleJooqRepository<T, ID> extends AbstractJooqRepository<T, ID> i
      */
     @Override
     public boolean existsById(final ID id) {
-        return this.entityOperations.existsById(id, this.type);
+        return this.entityOperations.existsById(id, this.repositoryEntityClass);
     }
 
     /**
@@ -95,7 +98,7 @@ public class SimpleJooqRepository<T, ID> extends AbstractJooqRepository<T, ID> i
      */
     @Override
     public Iterable<T> findAll() {
-        return this.entityOperations.findAll(this.type);
+        return this.entityOperations.findAll(this.repositoryEntityClass);
     }
 
     /**
@@ -103,7 +106,7 @@ public class SimpleJooqRepository<T, ID> extends AbstractJooqRepository<T, ID> i
      */
     @Override
     public Iterable<T> findAllById(final Iterable<ID> ids) {
-        return this.entityOperations.findAllById(ids, this.type);
+        return this.entityOperations.findAllById(ids, this.repositoryEntityClass);
     }
 
     /**
@@ -111,7 +114,7 @@ public class SimpleJooqRepository<T, ID> extends AbstractJooqRepository<T, ID> i
      */
     @Override
     public long count() {
-        return this.entityOperations.count(this.type);
+        return this.entityOperations.count(this.repositoryEntityClass);
     }
 
     /**
@@ -120,7 +123,7 @@ public class SimpleJooqRepository<T, ID> extends AbstractJooqRepository<T, ID> i
     @Transactional
     @Override
     public void deleteById(final ID id) {
-        this.entityOperations.deleteById(id, this.type);
+        this.entityOperations.deleteById(id, this.repositoryEntityClass);
     }
 
     /**
@@ -129,7 +132,7 @@ public class SimpleJooqRepository<T, ID> extends AbstractJooqRepository<T, ID> i
     @Transactional
     @Override
     public void delete(final T instance) {
-        this.entityOperations.delete(instance, this.type);
+        this.entityOperations.delete(instance, this.repositoryEntityClass);
     }
 
     /**
@@ -148,7 +151,7 @@ public class SimpleJooqRepository<T, ID> extends AbstractJooqRepository<T, ID> i
     @Transactional
     @Override
     public void deleteAll() {
-        this.entityOperations.deleteAll(this.type);
+        this.entityOperations.deleteAll(this.repositoryEntityClass);
     }
 
     /**
@@ -156,9 +159,9 @@ public class SimpleJooqRepository<T, ID> extends AbstractJooqRepository<T, ID> i
      */
     @Override
     public Iterable<T> findAll(final Sort sort) {
-        final SelectWhereStep<Record> step = this.dsl.selectFrom(this.table);
-        this.sortStep(step, sort);
-        return this.toList(step);
+        final Query query = this.findWithSortStep(sort);
+        return this.jdbcOperations.query(query.getSQL(), query.getBindValues().toArray(),
+                this.repositoryEntityRowMapper);
     }
 
     /**
@@ -166,9 +169,9 @@ public class SimpleJooqRepository<T, ID> extends AbstractJooqRepository<T, ID> i
      */
     @Override
     public Page<T> findAll(final Pageable pageable) {
-        final SelectWhereStep<Record> step = this.dsl.selectFrom(this.table);
-        this.pageableStep(step, pageable);
-        return new PageImpl<>(this.toList(step), pageable, this.count());
+        final Query query = this.findWithPageableStep(pageable);
+        return new PageImpl<>(this.jdbcOperations.query(query.getSQL(), query.getBindValues().toArray(),
+                this.repositoryEntityRowMapper), pageable, this.count());
     }
 
     /**
@@ -176,9 +179,15 @@ public class SimpleJooqRepository<T, ID> extends AbstractJooqRepository<T, ID> i
      */
     @Override
     public <S extends T> Optional<S> findOne(final Example<S> example) {
-        final SelectConditionStep<Record> step = this.dsl.selectFrom(this.table).where();
-        this.exampleStep(step, example);
-        return this.toOne(step);
+        final Query query = this.findWithExampleStep(example);
+        try {
+            //noinspection ConstantConditions
+            return Optional.of(this.jdbcOperations.queryForObject(query.getSQL(), query.getBindValues().toArray(),
+                    this.getEntityRowMapper(example.getProbeType())));
+        }
+        catch (final EmptyResultDataAccessException emptyResultDataAccessException) {
+            return Optional.empty();
+        }
     }
 
     /**
@@ -186,9 +195,9 @@ public class SimpleJooqRepository<T, ID> extends AbstractJooqRepository<T, ID> i
      */
     @Override
     public <S extends T> Iterable<S> findAll(final Example<S> example) {
-        final SelectConditionStep<Record> step = this.dsl.selectFrom(this.table).where();
-        this.exampleStep(step, example);
-        return this.toList(step);
+        final Query query = this.findWithExampleStep(example);
+        return this.jdbcOperations.query(query.getSQL(), query.getBindValues().toArray(),
+                this.getEntityRowMapper(example.getProbeType()));
     }
 
     /**
@@ -196,10 +205,9 @@ public class SimpleJooqRepository<T, ID> extends AbstractJooqRepository<T, ID> i
      */
     @Override
     public <S extends T> Iterable<S> findAll(final Example<S> example, final Sort sort) {
-        final SelectConditionStep<Record> step = this.dsl.selectFrom(this.table).where();
-        this.exampleStep(step, example);
-        this.sortStep(step, sort);
-        return this.toList(step);
+        final Query query = this.findWithExampleAndSortStep(example, sort);
+        return this.jdbcOperations.query(query.getSQL(), query.getBindValues().toArray(),
+                this.getEntityRowMapper(example.getProbeType()));
     }
 
     /**
@@ -207,15 +215,10 @@ public class SimpleJooqRepository<T, ID> extends AbstractJooqRepository<T, ID> i
      */
     @Override
     public <S extends T> Page<S> findAll(final Example<S> example, final Pageable pageable) {
-        final SelectConditionStep<Record> step = this.dsl.selectFrom(this.table).where();
-        this.exampleStep(step, example);
-        this.pageableStep(step, pageable);
-
-        final SelectConditionStep<Record1<Integer>> countStep = this.dsl.selectCount().from(this.table).where();
-        this.exampleStep(countStep, example);
-        final int count = this.dsl.fetchCount(countStep);
-
-        return new PageImpl<>(this.toList(step), pageable, count);
+        final Query query = this.findWithExampleAndPageableStep(example, pageable);
+        final List<S> entityList = this.jdbcOperations.query(query.getSQL(), query.getBindValues().toArray(),
+                this.getEntityRowMapper(example.getProbeType()));
+        return new PageImpl<>(entityList, pageable, this.count(example));
     }
 
     /**
@@ -223,9 +226,9 @@ public class SimpleJooqRepository<T, ID> extends AbstractJooqRepository<T, ID> i
      */
     @Override
     public <S extends T> long count(final Example<S> example) {
-        final SelectConditionStep<Record1<Integer>> countStep = this.dsl.selectCount().from(this.table).where();
-        this.exampleStep(countStep, example);
-        return this.dsl.fetchCount(countStep);
+        final Query query = this.countWithExampleStep(example);
+        //noinspection ConstantConditions
+        return this.jdbcOperations.queryForObject(query.getSQL(), Long.class);
     }
 
     /**
@@ -252,23 +255,7 @@ public class SimpleJooqRepository<T, ID> extends AbstractJooqRepository<T, ID> i
         return Optional.ofNullable(DataAccessUtils.nullableSingleResult(this.queryMapper.asList(queryStep.step(this.dsl))));
     }
 
-    private <S extends T> List<S> toList(final ResultQuery<Record> rq) {
-        try (final ResultSet rs = rq.fetchResultSet()) {
-            //noinspection unchecked
-            return (List<S>) this.jdbcMapper.stream(rs).collect(Collectors.toList());
-        }
-        catch (final SQLException e) {
-            throw new InvalidResultSetAccessException(e);
-        }
-    }
-
-    private <S extends T> Optional<S> toOne(final ResultQuery<Record> rq) {
-        try (final ResultSet rs = rq.fetchResultSet()) {
-            //noinspection unchecked
-            return Optional.ofNullable(DataAccessUtils.nullableSingleResult(((JdbcMapper<S>) this.jdbcMapper).stream(rs).collect(Collectors.toList())));
-        }
-        catch (final SQLException e) {
-            throw new InvalidResultSetAccessException(e);
-        }
+    protected <E> EntityRowMapper<E> getEntityRowMapper(final Class<E> domainType) {
+        return new EntityRowMapper<>(this.getRequiredPersistentEntity(domainType), this.jdbcConverter);
     }
 }
