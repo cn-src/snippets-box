@@ -82,6 +82,10 @@ public class JooqJdbcRepositoryFactoryBean<T extends Repository<S, ID>, S, ID ex
         this.operations = operations;
     }
 
+    public void setDslContext(final DSLContext dslContext) {
+        this.dslContext = dslContext;
+    }
+
     @Autowired
     public void setConverter(final JdbcConverter converter) {
         this.converter = converter;
