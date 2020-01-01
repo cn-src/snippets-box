@@ -26,7 +26,7 @@ import java.util.Optional;
 /**
  * @author cn-src
  */
-public abstract class AbstractJooqRepository<T, ID> {
+public abstract class AbstractJooqRepository<T> {
     protected final DSLContext dsl;
     protected final RelationalMappingContext context;
     protected final RelationalPersistentEntity<T> repositoryEntity;
@@ -51,7 +51,7 @@ public abstract class AbstractJooqRepository<T, ID> {
         return step;
     }
 
-    protected <S extends T> Query findWithExampleStep(final Example<S> example) {
+    protected <S extends T> SelectConditionStep<Record> findWithExampleStep(final Example<S> example) {
         final RelationalPersistentEntity<S> persistentEntity = this.getRequiredPersistentEntity(example.getProbeType());
         final Table<Record> table = DSL.table(persistentEntity.getTableName());
         final SelectConditionStep<Record> step = this.dsl.selectFrom(table).where();
@@ -60,21 +60,15 @@ public abstract class AbstractJooqRepository<T, ID> {
     }
 
     protected <S extends T> Query findWithExampleAndSortStep(final Example<S> example, final Sort sort) {
-        final RelationalPersistentEntity<S> persistentEntity = this.getRequiredPersistentEntity(example.getProbeType());
-        final Table<Record> table = DSL.table(persistentEntity.getTableName());
-        final SelectConditionStep<Record> step = this.dsl.selectFrom(table).where();
-        this.exampleStep(step, example, persistentEntity);
-        this.sortStep(step, sort);
-        return step;
+        final SelectConditionStep<Record> query = this.findWithExampleStep(example);
+        this.sortStep(query, sort);
+        return query;
     }
 
     protected <S extends T> Query findWithExampleAndPageableStep(final Example<S> example, final Pageable pageable) {
-        final RelationalPersistentEntity<S> persistentEntity = this.getRequiredPersistentEntity(example.getProbeType());
-        final Table<Record> table = DSL.table(persistentEntity.getTableName());
-        final SelectConditionStep<Record> step = this.dsl.selectFrom(table).where();
-        this.exampleStep(step, example, persistentEntity);
-        this.pageableStep(step, pageable);
-        return step;
+        final SelectConditionStep<Record> query = this.findWithExampleStep(example);
+        this.pageableStep(query, pageable);
+        return query;
     }
 
     protected <S extends T> Query countWithExampleStep(final Example<S> example) {

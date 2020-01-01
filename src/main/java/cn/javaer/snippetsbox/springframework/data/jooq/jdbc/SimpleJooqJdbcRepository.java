@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
  * @author cn-src
  */
 @Transactional(readOnly = true)
-public class SimpleJooqJdbcRepository<T, ID> extends AbstractJooqRepository<T, ID> implements JooqJdbcRepository<T, ID> {
+public class SimpleJooqJdbcRepository<T, ID> extends AbstractJooqRepository<T> implements JooqJdbcRepository<T, ID> {
 
     private final SelectQueryMapper<T> queryMapper;
     private final JdbcAggregateOperations entityOperations;
