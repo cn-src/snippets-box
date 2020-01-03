@@ -175,10 +175,12 @@ public class SimpleJooqJdbcRepository<T, ID> extends AbstractJooqRepository<T> i
     @Override
     public <S extends T> int[] batchInsert(final Iterable<S> entities) {
         Assert.notNull(entities, "Entities must not be null!");
+
         final StringBuilder sqlBuilder = new StringBuilder("INSERT INTO ");
         sqlBuilder.append(this.persistentEntity.getTableName());
         final StringJoiner columnJoiner = new StringJoiner(",", "(", ")");
         final StringJoiner valuesJoiner = new StringJoiner(",", "(", ")");
+
         int size = 0;
         for (final RelationalPersistentProperty persistentProperty : this.persistentEntity) {
             final String columnName = persistentProperty.getColumnName();
@@ -186,9 +188,11 @@ public class SimpleJooqJdbcRepository<T, ID> extends AbstractJooqRepository<T> i
             valuesJoiner.add("?");
             size++;
         }
+
         sqlBuilder.append(columnJoiner.toString())
                 .append(" VALUES ")
                 .append(valuesJoiner.toString());
+
         final List<Object[]> batchValues = new ArrayList<>();
         for (final S entity : entities) {
             final List<Object> values = new ArrayList<>(size);
