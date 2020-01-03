@@ -15,15 +15,24 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jdbc.core.JdbcAggregateOperations;
 import org.springframework.data.jdbc.core.convert.EntityRowMapper;
 import org.springframework.data.jdbc.core.convert.JdbcConverter;
+import org.springframework.data.mapping.MappingException;
+import org.springframework.data.mapping.PersistentProperty;
 import org.springframework.data.relational.core.mapping.RelationalMappingContext;
 import org.springframework.data.relational.core.mapping.RelationalPersistentEntity;
+import org.springframework.data.relational.core.mapping.RelationalPersistentProperty;
 import org.springframework.data.util.Streamable;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
+import org.springframework.lang.Nullable;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
+import org.springframework.util.ReflectionUtils;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 /**
@@ -40,6 +49,7 @@ public class SimpleJooqJdbcRepository<T, ID> extends AbstractJooqRepository<T> i
     private final JdbcConverter jdbcConverter;
     private final Class<T> repositoryEntityClass;
     private final EntityRowMapper<T> repositoryEntityRowMapper;
+    private final RelationalPersistentEntity<T> persistentEntity;
 
     public SimpleJooqJdbcRepository(final DSLContext dsl,
                                     final RelationalMappingContext context,
@@ -54,6 +64,7 @@ public class SimpleJooqJdbcRepository<T, ID> extends AbstractJooqRepository<T> i
         this.queryMapper = SelectQueryMapperFactory.newInstance().ignorePropertyNotFound().newMapper(persistentEntity.getType());
         this.repositoryEntityClass = persistentEntity.getType();
         this.repositoryEntityRowMapper = new EntityRowMapper<>(persistentEntity, jdbcConverter);
+        this.persistentEntity = persistentEntity;
     }
 
     /**
@@ -154,14 +165,44 @@ public class SimpleJooqJdbcRepository<T, ID> extends AbstractJooqRepository<T> i
         this.entityOperations.deleteAll(this.repositoryEntityClass);
     }
 
-    @Override
     @Transactional
+    @Override
     public T insert(final T instance) {
         return this.entityOperations.insert(instance);
     }
 
-    @Override
     @Transactional
+    @Override
+    public <S extends T> int[] batchInsert(final Iterable<S> entities) {
+        Assert.notNull(entities, "Entities must not be null!");
+        final StringBuilder sqlBuilder = new StringBuilder("INSERT INTO ");
+        sqlBuilder.append(this.persistentEntity.getTableName());
+        final StringJoiner columnJoiner = new StringJoiner(",", "(", ")");
+        final StringJoiner valuesJoiner = new StringJoiner(",", "(", ")");
+        int size = 0;
+        for (final RelationalPersistentProperty persistentProperty : this.persistentEntity) {
+            final String columnName = persistentProperty.getColumnName();
+            columnJoiner.add(columnName);
+            valuesJoiner.add("?");
+            size++;
+        }
+        sqlBuilder.append(columnJoiner.toString())
+                .append(" VALUES ")
+                .append(valuesJoiner.toString());
+        final List<Object[]> batchValues = new ArrayList<>();
+        for (final S entity : entities) {
+            final List<Object> values = new ArrayList<>(size);
+            for (final RelationalPersistentProperty persistentProperty : this.persistentEntity) {
+                final Object value = this.getProperty(persistentProperty, entity);
+                values.add(value);
+            }
+            batchValues.add(values.toArray());
+        }
+        return this.jdbcOperations.batchUpdate(sqlBuilder.toString(), batchValues);
+    }
+
+    @Transactional
+    @Override
     public T update(final T instance) {
         return this.entityOperations.update(instance);
     }
@@ -269,5 +310,31 @@ public class SimpleJooqJdbcRepository<T, ID> extends AbstractJooqRepository<T> i
 
     protected <E> EntityRowMapper<E> getEntityRowMapper(final Class<E> domainType) {
         return new EntityRowMapper<>(this.getRequiredPersistentEntity(domainType), this.jdbcConverter);
+    }
+
+    @Nullable
+    protected Object getProperty(final PersistentProperty<?> property, final Object bean) {
+
+        Assert.notNull(property, "PersistentProperty must not be null!");
+
+        try {
+
+            if (!property.usePropertyAccess()) {
+
+                final java.lang.reflect.Field field = property.getRequiredField();
+
+                ReflectionUtils.makeAccessible(field);
+                return ReflectionUtils.getField(field, bean);
+            }
+
+            final Method getter = property.getRequiredGetter();
+
+            ReflectionUtils.makeAccessible(getter);
+            return ReflectionUtils.invokeMethod(getter, bean);
+        }
+        catch (final IllegalStateException e) {
+            throw new MappingException(
+                    String.format("Could not read property %s of %s!", property.toString(), bean.toString()), e);
+        }
     }
 }
