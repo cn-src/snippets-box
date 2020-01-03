@@ -154,6 +154,18 @@ public class SimpleJooqJdbcRepository<T, ID> extends AbstractJooqRepository<T> i
         this.entityOperations.deleteAll(this.repositoryEntityClass);
     }
 
+    @Override
+    @Transactional
+    public T insert(final T instance) {
+        return this.entityOperations.insert(instance);
+    }
+
+    @Override
+    @Transactional
+    public T update(final T instance) {
+        return this.entityOperations.update(instance);
+    }
+
     /**
      * {@inheritDoc}
      */
