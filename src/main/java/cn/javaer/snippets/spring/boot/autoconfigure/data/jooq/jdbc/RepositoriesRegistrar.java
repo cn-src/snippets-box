@@ -1,7 +1,7 @@
 package cn.javaer.snippets.spring.boot.autoconfigure.data.jooq.jdbc;
 
-import cn.javaer.snippets.box.springframework.data.jooq.jdbc.config.EnableJooqJdbcRepositories;
-import cn.javaer.snippets.box.springframework.data.jooq.jdbc.config.JooqJdbcRepositoryConfigExtension;
+import cn.javaer.snippets.box.spring.data.jooq.jdbc.config.EnableJooqJdbcRepositories;
+import cn.javaer.snippets.box.spring.data.jooq.jdbc.config.JooqJdbcRepositoryConfigExtension;
 import org.springframework.boot.autoconfigure.data.AbstractRepositoryConfigurationSourceSupport;
 import org.springframework.data.repository.config.RepositoryConfigurationExtension;
 
