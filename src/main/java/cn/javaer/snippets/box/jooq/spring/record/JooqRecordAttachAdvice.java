@@ -1,4 +1,4 @@
-package cn.javaer.snippets.box.jooq;
+package cn.javaer.snippets.box.jooq.spring.record;
 
 import org.jooq.Configuration;
 import org.jooq.UpdatableRecord;

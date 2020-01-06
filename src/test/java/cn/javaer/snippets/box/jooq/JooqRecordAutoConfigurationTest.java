@@ -1,6 +1,8 @@
 package cn.javaer.snippets.box.jooq;
 
 import cn.javaer.snippets.box.jooq.gen.tables.records.CityRecord;
+import cn.javaer.snippets.box.jooq.spring.record.JooqRecordAttachAdvice;
+import cn.javaer.snippets.spring.boot.autoconfigure.jooq.JooqRecordAutoConfiguration;
 import org.jooq.DSLContext;
 import org.jooq.codegen.GenerationTool;
 import org.jooq.meta.jaxb.Database;

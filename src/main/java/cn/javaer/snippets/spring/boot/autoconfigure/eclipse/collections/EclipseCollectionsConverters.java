@@ -1,4 +1,4 @@
-package cn.javaer.snippets.box.eclipse.collections;
+package cn.javaer.snippets.spring.boot.autoconfigure.eclipse.collections;
 
 import org.eclipse.collections.api.RichIterable;
 import org.eclipse.collections.api.factory.Lists;

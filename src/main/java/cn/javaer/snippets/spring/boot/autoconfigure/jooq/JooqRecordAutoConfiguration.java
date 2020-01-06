@@ -1,5 +1,9 @@
-package cn.javaer.snippets.box.jooq;
+package cn.javaer.snippets.spring.boot.autoconfigure.jooq;
 
+import cn.javaer.snippets.box.jooq.spring.record.BeanUtils;
+import cn.javaer.snippets.box.jooq.spring.record.JooqRecordAttachAdvice;
+import cn.javaer.snippets.box.jooq.spring.record.JooqRecordClassConverter;
+import cn.javaer.snippets.box.jooq.spring.record.JooqRecordIgnoreSupperIntrospector;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jooq.DSLContext;
 import org.springframework.beans.factory.BeanFactory;

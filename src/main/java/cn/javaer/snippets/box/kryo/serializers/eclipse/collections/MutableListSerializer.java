@@ -1,5 +1,6 @@
-package cn.javaer.snippets.box.kryo.eclipse.collections;
+package cn.javaer.snippets.box.kryo.serializers.eclipse.collections;
 
+import cn.javaer.snippets.box.kryo.serializers.RegisterUtil;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;

@@ -1,7 +1,7 @@
 package cn.javaer.snippets.box.kryo;
 
-import cn.javaer.snippets.box.kryo.eclipse.collections.ImmutableListSerializer;
-import cn.javaer.snippets.box.kryo.eclipse.collections.MutableListSerializer;
+import cn.javaer.snippets.box.kryo.serializers.eclipse.collections.ImmutableListSerializer;
+import cn.javaer.snippets.box.kryo.serializers.eclipse.collections.MutableListSerializer;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;

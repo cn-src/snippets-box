@@ -1,4 +1,4 @@
-package cn.javaer.snippets.box.simpleflatmapper.jooq;
+package cn.javaer.snippets.spring.boot.autoconfigure.simpleflatmapper.jooq;
 
 import org.simpleflatmapper.jooq.JooqMapperFactory;
 import org.springframework.beans.factory.InitializingBean;

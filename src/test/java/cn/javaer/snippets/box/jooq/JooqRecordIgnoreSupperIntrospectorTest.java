@@ -1,6 +1,7 @@
 package cn.javaer.snippets.box.jooq;
 
 import cn.javaer.snippets.box.jooq.gen.tables.records.CityRecord;
+import cn.javaer.snippets.box.jooq.spring.record.JooqRecordIgnoreSupperIntrospector;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;

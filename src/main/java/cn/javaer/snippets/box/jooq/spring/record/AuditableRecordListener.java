@@ -1,5 +1,6 @@
-package cn.javaer.snippets.box.jooq;
+package cn.javaer.snippets.box.jooq.spring.record;
 
+import cn.javaer.snippets.box.jooq.CurrentUserProvider;
 import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.RecordContext;

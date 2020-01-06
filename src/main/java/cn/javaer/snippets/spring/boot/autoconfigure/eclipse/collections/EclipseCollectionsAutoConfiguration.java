@@ -1,4 +1,4 @@
-package cn.javaer.snippets.box.eclipse.collections;
+package cn.javaer.snippets.spring.boot.autoconfigure.eclipse.collections;
 
 import org.eclipse.collections.api.InternalIterable;
 import org.springframework.beans.factory.InitializingBean;

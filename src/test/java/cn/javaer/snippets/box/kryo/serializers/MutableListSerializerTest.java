@@ -1,4 +1,4 @@
-package cn.javaer.snippets.box.kryo.eclipse.collections;
+package cn.javaer.snippets.box.kryo.serializers;
 
 import cn.javaer.snippets.box.kryo.KryoHelper;
 import lombok.Data;

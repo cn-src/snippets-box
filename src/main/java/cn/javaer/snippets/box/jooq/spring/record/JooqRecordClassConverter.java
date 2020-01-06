@@ -1,4 +1,4 @@
-package cn.javaer.snippets.box.jooq;
+package cn.javaer.snippets.box.jooq.spring.record;
 
 import org.jooq.Configuration;
 import org.jooq.TableField;
@@ -29,7 +29,7 @@ public class JooqRecordClassConverter<T extends ConversionService & ConverterReg
     private ToIdConverter toIdConverter;
     private static final Map<Class<?>, Class<?>> CACHE = new ConcurrentHashMap<>();
 
-    JooqRecordClassConverter(final T conversionService) {
+    public JooqRecordClassConverter(final T conversionService) {
         Assert.notNull(conversionService, "ConversionService must not be null!");
 
         this.conversionService = conversionService;

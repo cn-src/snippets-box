@@ -1,4 +1,4 @@
-package cn.javaer.snippets.box.jooq;
+package cn.javaer.snippets.box.jooq.spring.record;
 
 import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;

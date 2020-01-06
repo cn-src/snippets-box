@@ -1,4 +1,4 @@
-package cn.javaer.snippets.box.springframework.jooq;
+package cn.javaer.snippets.spring.boot.autoconfigure.jooq;
 
 import org.jooq.DSLContext;
 import org.jooq.conf.Settings;

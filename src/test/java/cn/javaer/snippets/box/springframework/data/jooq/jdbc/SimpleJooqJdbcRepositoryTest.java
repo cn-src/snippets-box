@@ -3,7 +3,7 @@ package cn.javaer.snippets.box.springframework.data.jooq.jdbc;
 import cn.javaer.snippets.box.TestAutoConfigurationPackage;
 import cn.javaer.snippets.box.empty.EmptyDataPackage;
 import cn.javaer.snippets.box.springframework.data.jooq.jdbc.config.EnableJooqJdbcRepositories;
-import cn.javaer.snippets.box.springframework.data.jooq.jdbc.config.JooqJdbcRepositoriesAutoConfiguration;
+import cn.javaer.snippets.spring.boot.autoconfigure.data.jooq.jdbc.JooqJdbcRepositoriesAutoConfiguration;
 import cn.javaer.snippets.box.springframework.data.jooq.jdbc.user.User;
 import cn.javaer.snippets.box.springframework.data.jooq.jdbc.user.UserJdbcRepository;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package cn.javaer.snippets.box.jooq;
+package cn.javaer.snippets.box.jooq.spring.record;
 
 import org.jooq.Configuration;
 import org.springframework.beans.factory.BeanFactory;
@@ -12,10 +12,10 @@ import java.util.Optional;
 /**
  * @author cn-src
  */
-class BeanUtils {
+public class BeanUtils {
     private BeanUtils() {}
 
-    static Pair<Optional<Configuration>, Optional<Map<String, Configuration>>> getJooqConfiguration(final BeanFactory beanFactory) {
+    public static Pair<Optional<Configuration>, Optional<Map<String, Configuration>>> getJooqConfiguration(final BeanFactory beanFactory) {
         final ConfigurableListableBeanFactory listableBeanFactory = (ConfigurableListableBeanFactory) beanFactory;
         final Map<String, Configuration> configurationMap = listableBeanFactory.getBeansOfType(Configuration.class);
         final Configuration primaryConfiguration;

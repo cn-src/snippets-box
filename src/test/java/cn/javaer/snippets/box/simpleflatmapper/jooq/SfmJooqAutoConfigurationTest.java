@@ -1,5 +1,6 @@
 package cn.javaer.snippets.box.simpleflatmapper.jooq;
 
+import cn.javaer.snippets.spring.boot.autoconfigure.simpleflatmapper.jooq.SfmJooqAutoConfiguration;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.junit.jupiter.api.Test;

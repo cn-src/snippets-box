@@ -1,5 +1,6 @@
 package cn.javaer.snippets.box.springframework.jooq;
 
+import cn.javaer.snippets.spring.boot.autoconfigure.jooq.JooqDSLContextAutoConfiguration;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.junit.jupiter.api.Test;
