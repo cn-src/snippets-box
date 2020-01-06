@@ -83,7 +83,7 @@ class JooqRecordAutoConfigurationTest {
                                 .withInputSchema("PUBLIC")
                         )
                         .withTarget(new Target()
-                                .withPackageName("cn.javaer.snippetsbox.jooq.gen")
+                                .withPackageName("cn.javaer.snippets.box.spring.jooq.gen")
                                 .withDirectory(System.getProperty("user.dir") + "/src/test/java")));
 
         GenerationTool.generate(configuration);
