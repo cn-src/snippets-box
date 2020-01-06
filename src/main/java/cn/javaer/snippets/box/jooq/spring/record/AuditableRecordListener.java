@@ -1,10 +1,10 @@
 package cn.javaer.snippets.box.jooq.spring.record;
 
-import cn.javaer.snippets.box.jooq.CurrentUserProvider;
 import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.RecordContext;
 import org.jooq.impl.DefaultRecordListener;
+import org.springframework.data.domain.AuditorAware;
 
 import java.time.LocalDateTime;
 
@@ -18,10 +18,10 @@ public class AuditableRecordListener extends DefaultRecordListener {
     private static final String LAST_MODIFIED_DATE = "last_modified_date";
     private static final String LAST_MODIFIED_BY = "last_modified_by_id";
 
-    private final CurrentUserProvider currentUserProvider;
+    private final AuditorAware<?> auditorAware;
 
-    public AuditableRecordListener(final CurrentUserProvider currentUserProvider) {
-        this.currentUserProvider = currentUserProvider;
+    public AuditableRecordListener(final AuditorAware<?> auditorAware) {
+        this.auditorAware = auditorAware;
     }
 
     @SuppressWarnings("unchecked")
@@ -38,10 +38,10 @@ public class AuditableRecordListener extends DefaultRecordListener {
                 record.set((Field<LocalDateTime>) field, now);
             }
             else if (AuditableRecordListener.CREATED_BY.equalsIgnoreCase(fieldName)) {
-                record.set((Field<Object>) field, this.currentUserProvider.currentUser());
+                record.set((Field<Object>) field, this.auditorAware.getCurrentAuditor());
             }
             else if (AuditableRecordListener.LAST_MODIFIED_BY.equalsIgnoreCase(fieldName)) {
-                record.set((Field<Object>) field, this.currentUserProvider.currentUser());
+                record.set((Field<Object>) field, this.auditorAware.getCurrentAuditor());
             }
         }
     }
@@ -56,7 +56,7 @@ public class AuditableRecordListener extends DefaultRecordListener {
                 record.set((Field<LocalDateTime>) field, LocalDateTime.now());
             }
             else if (AuditableRecordListener.LAST_MODIFIED_BY.equalsIgnoreCase(fieldName)) {
-                record.set((Field<Object>) field, this.currentUserProvider.currentUser());
+                record.set((Field<Object>) field, this.auditorAware.getCurrentAuditor());
             }
         }
     }
