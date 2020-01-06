@@ -56,6 +56,7 @@ class JooqRecordAutoConfigurationTest {
                     assertThat(context).hasSingleBean(JooqRecordAttachAdvice.class);
                     assertThat(context).hasSingleBean(AssertController.class);
                     final JdbcTemplate jdbcTemplate = context.getBean(JdbcTemplate.class);
+                    jdbcTemplate.execute("DROP TABLE IF EXISTS city");
                     jdbcTemplate.execute("CREATE TABLE city ( id  INTEGER IDENTITY PRIMARY KEY, name VARCHAR(30) )");
 
                     final MockMvc mockMvc = context.getBean(MockMvc.class);

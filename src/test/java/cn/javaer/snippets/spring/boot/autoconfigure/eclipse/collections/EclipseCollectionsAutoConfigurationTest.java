@@ -43,6 +43,7 @@ class EclipseCollectionsAutoConfigurationTest {
                 .run(context -> {
                     assertThat(context).hasSingleBean(CityRepository.class);
                     final JdbcTemplate jdbcTemplate = context.getBean(JdbcTemplate.class);
+                    jdbcTemplate.execute("DROP TABLE IF EXISTS city");
                     jdbcTemplate.execute("CREATE TABLE city ( id  INTEGER IDENTITY PRIMARY KEY, name VARCHAR(30) )");
 
                     final CityRepository cityRepository = context.getBean(CityRepository.class);
