@@ -1,10 +1,9 @@
-package cn.javaer.spring.boot.autoconfigure.eclipse.collections;
+package cn.javaer.snippets.spring.boot.autoconfigure.eclipse.collections;
 
 import cn.javaer.snippets.box.TestAutoConfigurationPackage;
 import cn.javaer.snippets.box.empty.EmptyDataPackage;
-import cn.javaer.snippets.spring.boot.autoconfigure.eclipse.collections.EclipseCollectionsAutoConfiguration;
-import cn.javaer.spring.boot.autoconfigure.eclipse.collections.city.City;
-import cn.javaer.spring.boot.autoconfigure.eclipse.collections.city.CityRepository;
+import cn.javaer.snippets.spring.boot.autoconfigure.eclipse.collections.city.City;
+import cn.javaer.snippets.spring.boot.autoconfigure.eclipse.collections.city.CityRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.data.jdbc.JdbcRepositoriesAutoConfiguration;
