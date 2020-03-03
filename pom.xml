@@ -15,11 +15,11 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven.compiler.source>${java.version}</maven.compiler.source>
 
-        <eclipse-collections.version>10.1.0</eclipse-collections.version>
-        <spring-boot.version>2.2.2.RELEASE</spring-boot.version>
+        <eclipse-collections.version>10.2.0</eclipse-collections.version>
+        <spring-boot.version>2.3.0.M2</spring-boot.version>
         <simpleflatmapper.version>8.2.1</simpleflatmapper.version>
         <kryo.version>5.0.0-RC4</kryo.version>
-        <classgraph.version>4.8.59</classgraph.version>
+        <classgraph.version>4.8.65</classgraph.version>
     </properties>
 
     <dependencies>
@@ -31,11 +31,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jdbc</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot.experimental</groupId>
-            <artifactId>spring-boot-starter-data-r2dbc</artifactId>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -93,23 +88,6 @@
             <artifactId>h2</artifactId>
             <scope>test</scope>
         </dependency>
-
-        <dependency>
-            <groupId>io.r2dbc</groupId>
-            <artifactId>r2dbc-h2</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot.experimental</groupId>
-            <artifactId>spring-boot-test-autoconfigure-r2dbc</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.projectreactor</groupId>
-            <artifactId>reactor-test</artifactId>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <dependencyManagement>
@@ -118,13 +96,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
                 <version>${spring-boot.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.boot.experimental</groupId>
-                <artifactId>spring-boot-bom-r2dbc</artifactId>
-                <version>0.1.0.M3</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -206,12 +177,4 @@
             <email>public@javaer.cn</email>
         </developer>
     </developers>
-
-    <repositories>
-        <repository>
-            <id>spring-milestones</id>
-            <name>Spring Milestones</name>
-            <url>https://repo.spring.io/milestone</url>
-        </repository>
-    </repositories>
 </project>
