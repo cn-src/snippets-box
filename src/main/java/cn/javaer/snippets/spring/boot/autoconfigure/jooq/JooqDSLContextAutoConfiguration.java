@@ -5,9 +5,11 @@ import org.jooq.conf.Settings;
 import org.jooq.impl.DefaultConfiguration;
 import org.jooq.impl.DefaultDSLContext;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration;
 import org.springframework.boot.autoconfigure.jooq.JooqProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +24,7 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnClass(DSLContext.class)
 @ConditionalOnMissingBean(DSLContext.class)
 @EnableConfigurationProperties(JooqProperties.class)
+@AutoConfigureAfter({JooqAutoConfiguration.class})
 @ConditionalOnProperty(prefix = "snippets.jooq.dsl", name = "enabled", havingValue = "true",
         matchIfMissing = true)
 public class JooqDSLContextAutoConfiguration {
