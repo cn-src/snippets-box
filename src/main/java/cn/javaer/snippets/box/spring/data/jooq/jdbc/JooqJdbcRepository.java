@@ -1,5 +1,6 @@
 package cn.javaer.snippets.box.spring.data.jooq.jdbc;
 
+import org.jooq.DSLContext;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.QueryByExampleExecutor;
@@ -15,4 +16,6 @@ public interface JooqJdbcRepository<T, ID> extends PagingAndSortingRepository<T,
     <S extends T> int[] batchInsert(Iterable<S> entities);
 
     T update(final T instance);
+
+    DSLContext dsl();
 }

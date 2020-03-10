@@ -312,6 +312,11 @@ public class SimpleJooqJdbcRepository<T, ID> extends AbstractJooqRepository<T> i
         return Optional.ofNullable(DataAccessUtils.nullableSingleResult(this.queryMapper.asList(queryStep.step(this.dsl))));
     }
 
+    @Override
+    public DSLContext dsl() {
+        return this.dsl;
+    }
+
     protected <E> EntityRowMapper<E> getEntityRowMapper(final Class<E> domainType) {
         return new EntityRowMapper<>(this.getRequiredPersistentEntity(domainType), this.jdbcConverter);
     }
