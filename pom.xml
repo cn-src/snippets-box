@@ -63,6 +63,7 @@
             <groupId>io.github.classgraph</groupId>
             <artifactId>classgraph</artifactId>
             <version>${classgraph.version}</version>
+            <optional>true</optional>
         </dependency>
 
         <dependency>
