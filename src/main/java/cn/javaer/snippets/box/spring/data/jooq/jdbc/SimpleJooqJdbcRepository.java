@@ -285,7 +285,7 @@ public class SimpleJooqJdbcRepository<T, ID> extends AbstractJooqRepository<T> i
     public <S extends T> long count(final Example<S> example) {
         final Query query = this.countWithExampleStep(example);
         //noinspection ConstantConditions
-        return this.jdbcOperations.queryForObject(query.getSQL(), Long.class);
+        return this.jdbcOperations.queryForObject(query.getSQL(), query.getBindValues().toArray(), Long.class);
     }
 
     /**
