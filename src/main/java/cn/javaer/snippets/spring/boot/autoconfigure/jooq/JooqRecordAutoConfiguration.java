@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
@@ -33,6 +34,8 @@ import java.util.List;
 @ConditionalOnClass(DSLContext.class)
 @ConditionalOnBean(DataSource.class)
 @AutoConfigureAfter({JooqAutoConfiguration.class, JacksonAutoConfiguration.class})
+@ConditionalOnProperty(prefix = "snippets.jooq.record", name = "enabled", havingValue = "true",
+        matchIfMissing = true)
 public class JooqRecordAutoConfiguration implements InitializingBean {
 
     private final List<ObjectMapper> objectMappers;

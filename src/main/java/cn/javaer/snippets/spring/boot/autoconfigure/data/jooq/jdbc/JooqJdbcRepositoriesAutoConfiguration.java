@@ -23,7 +23,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnBean({NamedParameterJdbcOperations.class, PlatformTransactionManager.class})
 @ConditionalOnClass({DSLContext.class, NamedParameterJdbcOperations.class, AbstractJdbcConfiguration.class})
-@ConditionalOnProperty(prefix = "spring.data.jooq.jdbc.repositories", name = "enabled", havingValue = "true",
+@ConditionalOnProperty(prefix = "snippets.jooq.jdbc.repositories", name = "enabled", havingValue = "true",
         matchIfMissing = true)
 @AutoConfigureAfter({JdbcTemplateAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class})
 public class JooqJdbcRepositoriesAutoConfiguration {

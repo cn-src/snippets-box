@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 
@@ -20,6 +21,8 @@ import java.util.List;
 @ConditionalOnClass({JooqMapperFactory.class})
 @ConditionalOnBean({org.jooq.Configuration.class})
 @AutoConfigureAfter({JooqAutoConfiguration.class})
+@ConditionalOnProperty(prefix = "snippets.simpleflatmapper.jooq", name = "enabled", havingValue = "true",
+        matchIfMissing = true)
 public class SfmJooqAutoConfiguration implements InitializingBean {
 
     private final List<org.jooq.Configuration> jooqConfigurations;
