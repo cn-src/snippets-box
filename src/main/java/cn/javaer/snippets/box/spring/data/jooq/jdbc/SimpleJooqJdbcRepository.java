@@ -30,6 +30,7 @@ import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.StringJoiner;
@@ -226,9 +227,13 @@ public class SimpleJooqJdbcRepository<T, ID> extends AbstractJooqRepository<T> i
      */
     @Override
     public Page<T> findAll(final Pageable pageable) {
+        final long count = this.count();
+        if (count == 0) {
+            return new PageImpl<>(Collections.emptyList());
+        }
         final Query query = this.findWithPageableStep(pageable);
         return new PageImpl<>(this.jdbcOperations.query(query.getSQL(), query.getBindValues().toArray(),
-                this.repositoryEntityRowMapper), pageable, this.count());
+                this.repositoryEntityRowMapper), pageable, count);
     }
 
     /**
@@ -272,10 +277,14 @@ public class SimpleJooqJdbcRepository<T, ID> extends AbstractJooqRepository<T> i
      */
     @Override
     public <S extends T> Page<S> findAll(final Example<S> example, final Pageable pageable) {
+        final long count = this.count(example);
+        if (count == 0) {
+            return new PageImpl<>(Collections.emptyList());
+        }
         final Query query = this.findWithExampleAndPageableStep(example, pageable);
         final List<S> entityList = this.jdbcOperations.query(query.getSQL(), query.getBindValues().toArray(),
                 this.getEntityRowMapper(example.getProbeType()));
-        return new PageImpl<>(entityList, pageable, this.count(example));
+        return new PageImpl<>(entityList, pageable, count);
     }
 
     /**
