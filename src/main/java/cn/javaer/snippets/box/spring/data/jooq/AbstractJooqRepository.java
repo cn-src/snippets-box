@@ -21,6 +21,7 @@ import org.springframework.data.relational.core.mapping.RelationalPersistentProp
 import org.springframework.data.support.ExampleMatcherAccessor;
 import org.springframework.data.util.DirectFieldAccessFallbackBeanWrapper;
 
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -81,6 +82,7 @@ public abstract class AbstractJooqRepository<T> {
 
     protected <S extends T> void exampleStep(final SelectConditionStep<? extends Record> step, final Example<S> example, final RelationalPersistentEntity<S> persistentEntity) {
         final ExampleMatcher matcher = example.getMatcher();
+        final ExampleMatcher.PropertySpecifiers propertySpecifiers = matcher.getPropertySpecifiers();
         final ExampleMatcherAccessor exampleAccessor = new ExampleMatcherAccessor(matcher);
         final DirectFieldAccessFallbackBeanWrapper beanWrapper = new DirectFieldAccessFallbackBeanWrapper(example.getProbe());
 
@@ -96,7 +98,32 @@ public abstract class AbstractJooqRepository<T> {
 
             final Condition condition;
             if (optionalValue.isPresent()) {
-                condition = DSL.field(columnName).eq(optionalValue.get());
+                if (propertySpecifiers.hasSpecifierForPath(propertyName) && optionalValue.get().getClass() == String.class) {
+                    final ExampleMatcher.StringMatcher stringMatcher = propertySpecifiers.getForPath(propertyName).getStringMatcher();
+                    switch (Objects.requireNonNull(stringMatcher)) {
+                        case CONTAINING:
+                            condition = DSL.field(columnName).like((String) optionalValue.get());
+                            break;
+                        case STARTING:
+                            condition = DSL.field(columnName).startsWith(optionalValue.get());
+                            break;
+                        case ENDING:
+                            condition = DSL.field(columnName).endsWith(optionalValue.get());
+                            break;
+                        case REGEX:
+                            condition = DSL.field(columnName).likeRegex((String) optionalValue.get());
+                            break;
+                        case EXACT:
+                        case DEFAULT:
+                            condition = DSL.field(columnName).eq(optionalValue.get());
+                            break;
+                        default:
+                            throw new UnsupportedOperationException(stringMatcher.name());
+                    }
+                }
+                else {
+                    condition = DSL.field(columnName).eq(optionalValue.get());
+                }
             }
             else if (exampleAccessor.getNullHandler().equals(ExampleMatcher.NullHandler.INCLUDE)) {
                 condition = DSL.field(columnName).isNull();
