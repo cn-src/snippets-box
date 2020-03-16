@@ -96,13 +96,16 @@ public abstract class AbstractJooqRepository<T> {
                     .apply(Optional.ofNullable(beanWrapper.getPropertyValue(propertyName)));
             final String columnName = persistentProperty.getColumnName();
 
-            final Condition condition;
+            Condition condition = null;
             if (optionalValue.isPresent()) {
                 if (propertySpecifiers.hasSpecifierForPath(propertyName) && optionalValue.get().getClass() == String.class) {
                     final ExampleMatcher.StringMatcher stringMatcher = propertySpecifiers.getForPath(propertyName).getStringMatcher();
+                    final String str = (String) optionalValue.get();
                     switch (Objects.requireNonNull(stringMatcher)) {
                         case CONTAINING:
-                            condition = DSL.field(columnName).like((String) optionalValue.get());
+                            if (str.length() > 0) {
+                                condition = DSL.field(columnName).like(str);
+                            }
                             break;
                         case STARTING:
                             condition = DSL.field(columnName).startsWith(optionalValue.get());
@@ -111,11 +114,15 @@ public abstract class AbstractJooqRepository<T> {
                             condition = DSL.field(columnName).endsWith(optionalValue.get());
                             break;
                         case REGEX:
-                            condition = DSL.field(columnName).likeRegex((String) optionalValue.get());
+                            condition = DSL.field(columnName).likeRegex(str);
                             break;
                         case EXACT:
-                        case DEFAULT:
                             condition = DSL.field(columnName).eq(optionalValue.get());
+                            break;
+                        case DEFAULT:
+                            if (str.length() > 0) {
+                                condition = DSL.field(columnName).eq(optionalValue.get());
+                            }
                             break;
                         default:
                             throw new UnsupportedOperationException(stringMatcher.name());
@@ -132,6 +139,9 @@ public abstract class AbstractJooqRepository<T> {
                 continue;
             }
 
+            if (condition == null) {
+                continue;
+            }
             if (matcher.isAllMatching()) {
                 step.and(condition);
             }
