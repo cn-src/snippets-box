@@ -1,6 +1,7 @@
 package cn.javaer.snippets.box.spring.data.jooq.jdbc;
 
 import cn.javaer.snippets.box.spring.data.jooq.AbstractJooqRepository;
+import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Query;
 import org.simpleflatmapper.jooq.SelectQueryMapper;
@@ -311,6 +312,27 @@ public class SimpleJooqJdbcRepository<T, ID> extends AbstractJooqRepository<T> i
     @Override
     public List<T> findAll(final QueryStep queryStep) {
         return this.queryMapper.asList(queryStep.step(this.dsl));
+    }
+
+    @Override
+    public Optional<T> findOne(final Condition condition) {
+        final Query query = this.findWithConditionStep(condition);
+        try {
+            //noinspection ConstantConditions
+            return Optional.of(this.jdbcOperations.queryForObject(query.getSQL(), query.getBindValues().toArray(),
+                    this.repositoryEntityRowMapper));
+        }
+        catch (final EmptyResultDataAccessException emptyResultDataAccessException) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public List<T> findAll(final Condition condition) {
+        final Query query = this.findWithConditionStep(condition);
+
+        return this.jdbcOperations.query(query.getSQL(), query.getBindValues().toArray(),
+                this.repositoryEntityRowMapper);
     }
 
     /**

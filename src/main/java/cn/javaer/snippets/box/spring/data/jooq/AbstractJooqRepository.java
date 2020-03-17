@@ -40,6 +40,11 @@ public abstract class AbstractJooqRepository<T> {
         this.repositoryTable = DSL.table(repositoryEntity.getTableName());
     }
 
+    protected Query findWithConditionStep(final Condition condition) {
+        return this.dsl.selectFrom(this.repositoryTable)
+                .where(condition);
+    }
+
     protected Query findWithSortStep(final Sort sort) {
         final SelectWhereStep<Record> step = this.dsl.selectFrom(this.repositoryTable);
         this.sortStep(step, sort);
