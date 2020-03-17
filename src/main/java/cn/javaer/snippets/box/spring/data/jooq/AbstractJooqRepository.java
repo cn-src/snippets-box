@@ -45,6 +45,13 @@ public abstract class AbstractJooqRepository<T> {
                 .where(condition);
     }
 
+    protected Query findWithConditionAndPageableStep(final Condition condition, final Pageable pageable) {
+        final SelectConditionStep<Record> step = this.dsl.selectFrom(this.repositoryTable)
+                .where(condition);
+        this.pageableStep(step, pageable);
+        return step;
+    }
+
     protected Query findWithSortStep(final Sort sort) {
         final SelectWhereStep<Record> step = this.dsl.selectFrom(this.repositoryTable);
         this.sortStep(step, sort);

@@ -4,6 +4,9 @@ import cn.javaer.snippets.box.spring.data.jooq.AbstractJooqRepository;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Query;
+import org.jooq.Record;
+import org.jooq.Table;
+import org.jooq.impl.DSL;
 import org.simpleflatmapper.jooq.SelectQueryMapper;
 import org.simpleflatmapper.jooq.SelectQueryMapperFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -333,6 +336,19 @@ public class SimpleJooqJdbcRepository<T, ID> extends AbstractJooqRepository<T> i
 
         return this.jdbcOperations.query(query.getSQL(), query.getBindValues().toArray(),
                 this.repositoryEntityRowMapper);
+    }
+
+    @Override
+    public Page<T> findAll(final Condition condition, final Pageable pageable) {
+        final Table<Record> table = DSL.table(this.persistentEntity.getTableName());
+        final long count = this.dsl.fetchCount(table, condition);
+        if (count == 0) {
+            return new PageImpl<>(Collections.emptyList());
+        }
+        final Query query = this.findWithConditionAndPageableStep(condition, pageable);
+        final List<T> list = this.jdbcOperations.query(query.getSQL(), query.getBindValues().toArray(),
+                this.repositoryEntityRowMapper);
+        return new PageImpl<>(list, pageable, count);
     }
 
     /**
