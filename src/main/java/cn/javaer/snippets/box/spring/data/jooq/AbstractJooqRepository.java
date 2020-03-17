@@ -104,7 +104,7 @@ public abstract class AbstractJooqRepository<T> {
                     switch (Objects.requireNonNull(stringMatcher)) {
                         case CONTAINING:
                             if (str.length() > 0) {
-                                condition = DSL.field(columnName).like(str);
+                                condition = DSL.field(columnName).contains(str);
                             }
                             break;
                         case STARTING:
