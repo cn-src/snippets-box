@@ -1,21 +1,13 @@
 package cn.javaer.snippets.box.spring.data.jooq.jdbc;
 
 import cn.javaer.snippets.box.spring.data.jooq.AbstractJooqRepository;
-import org.jooq.Condition;
-import org.jooq.DSLContext;
-import org.jooq.Query;
-import org.jooq.Record;
-import org.jooq.Table;
+import org.jooq.*;
 import org.jooq.impl.DSL;
 import org.simpleflatmapper.jooq.SelectQueryMapper;
 import org.simpleflatmapper.jooq.SelectQueryMapperFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.support.DataAccessUtils;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.data.jdbc.core.JdbcAggregateOperations;
 import org.springframework.data.jdbc.core.convert.EntityRowMapper;
 import org.springframework.data.jdbc.core.convert.JdbcConverter;
@@ -33,11 +25,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.StringJoiner;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -250,8 +238,7 @@ public class SimpleJooqJdbcRepository<T, ID> extends AbstractJooqRepository<T> i
             //noinspection ConstantConditions
             return Optional.of(this.jdbcOperations.queryForObject(query.getSQL(), query.getBindValues().toArray(),
                     this.getEntityRowMapper(example.getProbeType())));
-        }
-        catch (final EmptyResultDataAccessException emptyResultDataAccessException) {
+        } catch (final EmptyResultDataAccessException emptyResultDataAccessException) {
             return Optional.empty();
         }
     }
@@ -324,8 +311,7 @@ public class SimpleJooqJdbcRepository<T, ID> extends AbstractJooqRepository<T> i
             //noinspection ConstantConditions
             return Optional.of(this.jdbcOperations.queryForObject(query.getSQL(), query.getBindValues().toArray(),
                     this.repositoryEntityRowMapper));
-        }
-        catch (final EmptyResultDataAccessException emptyResultDataAccessException) {
+        } catch (final EmptyResultDataAccessException emptyResultDataAccessException) {
             return Optional.empty();
         }
     }
@@ -340,8 +326,7 @@ public class SimpleJooqJdbcRepository<T, ID> extends AbstractJooqRepository<T> i
 
     @Override
     public Page<T> findAll(final Condition condition, final Pageable pageable) {
-        final Table<Record> table = DSL.table(this.persistentEntity.getTableName());
-        final long count = this.dsl.fetchCount(table, condition);
+        final long count = this.count(condition);
         if (count == 0) {
             return new PageImpl<>(Collections.emptyList());
         }
@@ -349,6 +334,17 @@ public class SimpleJooqJdbcRepository<T, ID> extends AbstractJooqRepository<T> i
         final List<T> list = this.jdbcOperations.query(query.getSQL(), query.getBindValues().toArray(),
                 this.repositoryEntityRowMapper);
         return new PageImpl<>(list, pageable, count);
+    }
+
+    @Override
+    public long count(final Condition condition) {
+        final Table<Record> table = DSL.table(this.persistentEntity.getTableName());
+        return this.dsl.fetchCount(table, condition);
+    }
+
+    @Override
+    public boolean exists(final Condition condition) {
+        return this.count(condition) > 0;
     }
 
     /**
@@ -387,8 +383,7 @@ public class SimpleJooqJdbcRepository<T, ID> extends AbstractJooqRepository<T> i
 
             ReflectionUtils.makeAccessible(getter);
             return ReflectionUtils.invokeMethod(getter, bean);
-        }
-        catch (final IllegalStateException e) {
+        } catch (final IllegalStateException e) {
             throw new MappingException(
                     String.format("Could not read property %s of %s!", property.toString(), bean.toString()), e);
         }

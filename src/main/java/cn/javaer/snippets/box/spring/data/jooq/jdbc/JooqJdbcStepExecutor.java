@@ -21,4 +21,8 @@ public interface JooqJdbcStepExecutor<T> {
     List<T> findAll(Condition condition);
 
     Page<T> findAll(Condition condition, Pageable pageable);
+
+    long count(Condition condition);
+
+    boolean exists(Condition condition);
 }
