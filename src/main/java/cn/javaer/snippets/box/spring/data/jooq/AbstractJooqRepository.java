@@ -1,15 +1,6 @@
 package cn.javaer.snippets.box.spring.data.jooq;
 
-import org.jooq.Condition;
-import org.jooq.DSLContext;
-import org.jooq.Query;
-import org.jooq.Record;
-import org.jooq.Record1;
-import org.jooq.SelectConditionStep;
-import org.jooq.SelectOrderByStep;
-import org.jooq.SelectWhereStep;
-import org.jooq.SortField;
-import org.jooq.Table;
+import org.jooq.*;
 import org.jooq.impl.DSL;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -139,15 +130,16 @@ public abstract class AbstractJooqRepository<T> {
                         default:
                             throw new UnsupportedOperationException(stringMatcher.name());
                     }
+                } else {
+                    if (optionalValue.get().getClass() == String.class && ((String) optionalValue.get()).length() == 0) {
+
+                    } else {
+                        condition = DSL.field(columnName).eq(optionalValue.get());
+                    }
                 }
-                else {
-                    condition = DSL.field(columnName).eq(optionalValue.get());
-                }
-            }
-            else if (exampleAccessor.getNullHandler().equals(ExampleMatcher.NullHandler.INCLUDE)) {
+            } else if (exampleAccessor.getNullHandler().equals(ExampleMatcher.NullHandler.INCLUDE)) {
                 condition = DSL.field(columnName).isNull();
-            }
-            else {
+            } else {
                 continue;
             }
 
@@ -156,8 +148,7 @@ public abstract class AbstractJooqRepository<T> {
             }
             if (matcher.isAllMatching()) {
                 step.and(condition);
-            }
-            else {
+            } else {
                 step.or(condition);
             }
         }
