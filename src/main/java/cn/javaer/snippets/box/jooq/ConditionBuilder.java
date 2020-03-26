@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  * @author cn-src
  */
 public class ConditionBuilder {
-
+    // TODO
     private final boolean ignoreNull = true;
     private final boolean ignoreEmpty = true;
     private final boolean ignoreBlank = true;
