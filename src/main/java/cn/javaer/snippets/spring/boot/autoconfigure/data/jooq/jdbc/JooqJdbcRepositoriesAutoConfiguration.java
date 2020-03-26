@@ -1,5 +1,6 @@
 package cn.javaer.snippets.spring.boot.autoconfigure.data.jooq.jdbc;
 
+import cn.javaer.snippets.box.spring.data.jooq.jdbc.JsonbConverter;
 import cn.javaer.snippets.box.spring.data.jooq.jdbc.config.EnableJooqJdbcRepositories;
 import cn.javaer.snippets.box.spring.data.jooq.jdbc.config.JooqJdbcRepositoryConfigExtension;
 import org.jooq.DSLContext;
@@ -12,9 +13,12 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerA
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.jdbc.core.convert.JdbcCustomConversions;
 import org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.transaction.PlatformTransactionManager;
+
+import java.util.Collections;
 
 /**
  * @author cn-src
@@ -38,6 +42,9 @@ public class JooqJdbcRepositoriesAutoConfiguration {
     @Configuration
     @ConditionalOnMissingBean({AbstractJdbcConfiguration.class})
     static class SpringBootJooqJdbcConfiguration extends AbstractJdbcConfiguration {
-
+        @Override
+        public JdbcCustomConversions jdbcCustomConversions() {
+            return new JdbcCustomConversions(Collections.singletonList(JsonbConverter.INSTANCE));
+        }
     }
 }
