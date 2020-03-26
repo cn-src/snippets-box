@@ -3,6 +3,7 @@ package cn.javaer.snippets.box.spring.data.jooq.jdbc;
 import cn.javaer.snippets.box.spring.data.jooq.AbstractJooqRepository;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
+import org.jooq.DeleteConditionStep;
 import org.jooq.Query;
 import org.jooq.Record;
 import org.jooq.Table;
@@ -43,7 +44,7 @@ import java.util.stream.Collectors;
  * @author cn-src
  */
 @Transactional(readOnly = true)
-public class SimpleJooqJdbcRepository<T, ID> extends AbstractJooqRepository<T> implements JooqJdbcRepository<T, ID> {
+public class SimpleJooqJdbcRepository<T, ID> extends AbstractJooqRepository<T, ID> implements JooqJdbcRepository<T, ID> {
 
     private final SelectQueryMapper<T> queryMapper;
     private final JdbcAggregateOperations entityOperations;
@@ -377,6 +378,12 @@ public class SimpleJooqJdbcRepository<T, ID> extends AbstractJooqRepository<T> i
         final UpdateConditionStep<Record> updateStep = this.updateByIdAndCreatorStep(instance);
         this.jdbcOperations.update(updateStep.getSQL(), updateStep.getBindValues());
         return instance;
+    }
+
+    @Override
+    public void deleteByIdAndCreator(final ID id) {
+        final DeleteConditionStep<Record> deleteStep = this.deleteByIdAndCreatorStep(id);
+        this.jdbcOperations.update(deleteStep.getSQL(), deleteStep.getBindValues());
     }
 
     protected <E> EntityRowMapper<E> getEntityRowMapper(final Class<E> domainType) {

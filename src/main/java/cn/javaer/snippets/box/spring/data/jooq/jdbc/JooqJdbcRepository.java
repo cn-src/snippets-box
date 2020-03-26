@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.QueryByExampleExecutor;
  * @author cn-src
  */
 @NoRepositoryBean
-public interface JooqJdbcRepository<T, ID> extends PagingAndSortingRepository<T, ID>, QueryByExampleExecutor<T>, JooqJdbcStepExecutor<T>, JooqJdbcAuditableExecutor<T> {
+public interface JooqJdbcRepository<T, ID> extends PagingAndSortingRepository<T, ID>, QueryByExampleExecutor<T>, JooqJdbcStepExecutor<T>, JooqJdbcAuditableExecutor<T, ID> {
 
     T insert(final T instance);
 

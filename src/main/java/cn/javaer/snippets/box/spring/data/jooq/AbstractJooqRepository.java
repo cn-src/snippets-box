@@ -2,6 +2,7 @@ package cn.javaer.snippets.box.spring.data.jooq;
 
 import org.jooq.Condition;
 import org.jooq.DSLContext;
+import org.jooq.DeleteConditionStep;
 import org.jooq.Query;
 import org.jooq.Record;
 import org.jooq.Record1;
@@ -43,7 +44,7 @@ import java.util.Optional;
 /**
  * @author cn-src
  */
-public abstract class AbstractJooqRepository<T> {
+public abstract class AbstractJooqRepository<T, ID> {
     protected final DSLContext dsl;
     protected final RelationalMappingContext context;
     protected final RelationalPersistentEntity<T> repositoryEntity;
@@ -206,6 +207,8 @@ public abstract class AbstractJooqRepository<T> {
     }
 
     protected UpdateConditionStep<Record> updateByIdAndCreatorStep(final T instance) {
+        Assert.isTrue(this.auditorAware.getCurrentAuditor().isPresent(), "Must be has auditor");
+
         final UpdateSetFirstStep<Record> updateStep = this.dsl.update(this.repositoryTable);
         UpdateSetMoreStep<Record> updateStepMore = null;
         Condition idCondition = null;
@@ -222,11 +225,11 @@ public abstract class AbstractJooqRepository<T> {
                 continue;
             }
             final Object currentAuditor = this.auditorAware.getCurrentAuditor().get();
-            if (property.isAnnotationPresent(CreatedBy.class) && this.auditorAware.getCurrentAuditor().isPresent()) {
+            if (property.isAnnotationPresent(CreatedBy.class)) {
                 createdByCondition = DSL.field(property.getColumnName()).eq(currentAuditor);
                 continue;
             }
-            if (property.isAnnotationPresent(LastModifiedBy.class) && this.auditorAware.getCurrentAuditor().isPresent()) {
+            if (property.isAnnotationPresent(LastModifiedBy.class)) {
                 updateStepMore = updateStep.set(DSL.field(property.getColumnName()), currentAuditor);
                 continue;
             }
@@ -237,6 +240,18 @@ public abstract class AbstractJooqRepository<T> {
             updateStepMore = updateStep.set(DSL.field(property.getColumnName()), this.getProperty(property, instance));
         }
         return Objects.requireNonNull(updateStepMore).where(Objects.requireNonNull(idCondition).and(Objects.requireNonNull(createdByCondition)));
+    }
+
+    protected DeleteConditionStep<Record> deleteByIdAndCreatorStep(final ID id) {
+        Assert.notNull(id, "Id must not be null");
+        Assert.isTrue(this.auditorAware.getCurrentAuditor().isPresent(), "Auditor must be has");
+
+        final String createColumnName = Objects.requireNonNull(this.repositoryEntity.getPersistentProperty(CreatedBy.class))
+                .getColumnName();
+
+        return this.dsl.deleteFrom(this.repositoryTable)
+                .where(DSL.field(this.repositoryEntity.getIdColumn()).eq(id))
+                .and(DSL.field(createColumnName).eq(this.auditorAware.getCurrentAuditor().get()));
     }
 
     @SuppressWarnings("unchecked")
