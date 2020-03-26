@@ -206,6 +206,15 @@ public abstract class AbstractJooqRepository<T, ID> {
         }
     }
 
+    protected Query findAllByCreatorStep() {
+        Assert.isTrue(this.auditorAware.getCurrentAuditor().isPresent(), "Auditor must be has");
+        final String createColumnName = Objects.requireNonNull(this.repositoryEntity.getPersistentProperty(CreatedBy.class))
+                .getColumnName();
+        
+        return this.dsl.selectFrom(this.repositoryTable)
+                .where(DSL.field(createColumnName).eq(this.auditorAware.getCurrentAuditor().get()));
+    }
+
     protected UpdateConditionStep<Record> updateByIdAndCreatorStep(final T instance) {
         Assert.isTrue(this.auditorAware.getCurrentAuditor().isPresent(), "Must be has auditor");
 

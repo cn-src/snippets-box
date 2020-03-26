@@ -374,12 +374,23 @@ public class SimpleJooqJdbcRepository<T, ID> extends AbstractJooqRepository<T, I
     }
 
     @Override
+    public Iterable<T> findAllByCreator() {
+        
+        final Query query = this.findAllByCreatorStep();
+
+        return this.jdbcOperations.query(query.getSQL(), query.getBindValues().toArray(),
+                this.repositoryEntityRowMapper);
+    }
+
+    @Transactional
+    @Override
     public T updateByIdAndCreator(final T instance) {
         final UpdateConditionStep<Record> updateStep = this.updateByIdAndCreatorStep(instance);
         this.jdbcOperations.update(updateStep.getSQL(), updateStep.getBindValues());
         return instance;
     }
 
+    @Transactional
     @Override
     public void deleteByIdAndCreator(final ID id) {
         final DeleteConditionStep<Record> deleteStep = this.deleteByIdAndCreatorStep(id);

@@ -5,6 +5,8 @@ package cn.javaer.snippets.box.spring.data.jooq.jdbc;
  */
 public interface JooqJdbcAuditableExecutor<T, ID> {
 
+    Iterable<T> findAllByCreator();
+
     /**
      * 更新实体，根据实体 ID 和 创建者。
      *
@@ -14,5 +16,10 @@ public interface JooqJdbcAuditableExecutor<T, ID> {
      */
     T updateByIdAndCreator(final T instance);
 
+    /**
+     * 删除实体，根据实体 ID 和 创建者。
+     *
+     * @param id 实体 ID
+     */
     void deleteByIdAndCreator(final ID id);
 }
