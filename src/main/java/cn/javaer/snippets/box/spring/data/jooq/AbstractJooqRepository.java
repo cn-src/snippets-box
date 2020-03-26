@@ -1,17 +1,42 @@
 package cn.javaer.snippets.box.spring.data.jooq;
 
-import org.jooq.*;
+import org.jooq.Condition;
+import org.jooq.DSLContext;
+import org.jooq.Query;
+import org.jooq.Record;
+import org.jooq.Record1;
+import org.jooq.SelectConditionStep;
+import org.jooq.SelectOrderByStep;
+import org.jooq.SelectWhereStep;
+import org.jooq.SortField;
+import org.jooq.Table;
+import org.jooq.UpdateConditionStep;
+import org.jooq.UpdateSetFirstStep;
+import org.jooq.UpdateSetMoreStep;
 import org.jooq.impl.DSL;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.annotation.ReadOnlyProperty;
+import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mapping.MappingException;
+import org.springframework.data.mapping.PersistentProperty;
 import org.springframework.data.relational.core.mapping.RelationalMappingContext;
 import org.springframework.data.relational.core.mapping.RelationalPersistentEntity;
 import org.springframework.data.relational.core.mapping.RelationalPersistentProperty;
 import org.springframework.data.support.ExampleMatcherAccessor;
 import org.springframework.data.util.DirectFieldAccessFallbackBeanWrapper;
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
+import org.springframework.util.ReflectionUtils;
 
+import java.lang.reflect.Method;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -22,12 +47,18 @@ public abstract class AbstractJooqRepository<T> {
     protected final DSLContext dsl;
     protected final RelationalMappingContext context;
     protected final RelationalPersistentEntity<T> repositoryEntity;
+    protected final AuditorAware<?> auditorAware;
     protected final Table<Record> repositoryTable;
 
-    protected AbstractJooqRepository(final DSLContext dsl, final RelationalPersistentEntity<T> repositoryEntity, final RelationalMappingContext context) {
+    protected AbstractJooqRepository(final DSLContext dsl,
+                                     final RelationalPersistentEntity<T> repositoryEntity,
+                                     final RelationalMappingContext context,
+                                     final AuditorAware<?> auditorAware
+    ) {
         this.dsl = dsl;
         this.context = context;
         this.repositoryEntity = repositoryEntity;
+        this.auditorAware = auditorAware;
         this.repositoryTable = DSL.table(repositoryEntity.getTableName());
     }
 
@@ -130,16 +161,20 @@ public abstract class AbstractJooqRepository<T> {
                         default:
                             throw new UnsupportedOperationException(stringMatcher.name());
                     }
-                } else {
+                }
+                else {
                     if (optionalValue.get().getClass() == String.class && ((String) optionalValue.get()).length() == 0) {
 
-                    } else {
+                    }
+                    else {
                         condition = DSL.field(columnName).eq(optionalValue.get());
                     }
                 }
-            } else if (exampleAccessor.getNullHandler().equals(ExampleMatcher.NullHandler.INCLUDE)) {
+            }
+            else if (exampleAccessor.getNullHandler().equals(ExampleMatcher.NullHandler.INCLUDE)) {
                 condition = DSL.field(columnName).isNull();
-            } else {
+            }
+            else {
                 continue;
             }
 
@@ -148,7 +183,8 @@ public abstract class AbstractJooqRepository<T> {
             }
             if (matcher.isAllMatching()) {
                 step.and(condition);
-            } else {
+            }
+            else {
                 step.or(condition);
             }
         }
@@ -169,8 +205,67 @@ public abstract class AbstractJooqRepository<T> {
         }
     }
 
+    protected UpdateConditionStep<Record> updateByIdAndCreatorStep(final T instance) {
+        final UpdateSetFirstStep<Record> updateStep = this.dsl.update(this.repositoryTable);
+        UpdateSetMoreStep<Record> updateStepMore = null;
+        Condition idCondition = null;
+        Condition createdByCondition = null;
+        final RelationalPersistentEntity<?> persistentEntity = this.getRequiredPersistentEntity(instance.getClass());
+        for (final RelationalPersistentProperty property : persistentEntity) {
+            if (property.isTransient()
+                    || property.isAnnotationPresent(CreatedDate.class)
+                    || property.isAnnotationPresent(ReadOnlyProperty.class)) {
+                continue;
+            }
+            if (property.isIdProperty()) {
+                idCondition = DSL.field(property.getColumnName()).eq(this.getProperty(property, instance));
+                continue;
+            }
+            if (property.isAnnotationPresent(CreatedBy.class) && this.auditorAware.getCurrentAuditor().isPresent()) {
+                createdByCondition = DSL.field(property.getColumnName()).eq(this.auditorAware.getCurrentAuditor().get());
+                continue;
+            }
+            if (property.isAnnotationPresent(LastModifiedBy.class) && this.auditorAware.getCurrentAuditor().isPresent()) {
+                updateStepMore = updateStep.set(DSL.field(property.getColumnName()), this.auditorAware.getCurrentAuditor().get());
+                continue;
+            }
+            if (property.isAnnotationPresent(LastModifiedDate.class)) {
+                updateStepMore = updateStep.set(DSL.field(property.getColumnName()), LocalDateTime.now());
+                continue;
+            }
+            updateStepMore = updateStep.set(DSL.field(property.getColumnName()), this.getProperty(property, instance));
+        }
+        return Objects.requireNonNull(updateStepMore).where(Objects.requireNonNull(idCondition).and(Objects.requireNonNull(createdByCondition)));
+    }
+
     @SuppressWarnings("unchecked")
     protected <S> RelationalPersistentEntity<S> getRequiredPersistentEntity(final Class<S> domainType) {
         return (RelationalPersistentEntity<S>) this.context.getRequiredPersistentEntity(domainType);
+    }
+
+    @Nullable
+    protected Object getProperty(final PersistentProperty<?> property, final Object bean) {
+
+        Assert.notNull(property, "PersistentProperty must not be null!");
+
+        try {
+
+            if (!property.usePropertyAccess()) {
+
+                final java.lang.reflect.Field field = property.getRequiredField();
+
+                ReflectionUtils.makeAccessible(field);
+                return ReflectionUtils.getField(field, bean);
+            }
+
+            final Method getter = property.getRequiredGetter();
+
+            ReflectionUtils.makeAccessible(getter);
+            return ReflectionUtils.invokeMethod(getter, bean);
+        }
+        catch (final IllegalStateException e) {
+            throw new MappingException(
+                    String.format("Could not read property %s of %s!", property.toString(), bean.toString()), e);
+        }
     }
 }

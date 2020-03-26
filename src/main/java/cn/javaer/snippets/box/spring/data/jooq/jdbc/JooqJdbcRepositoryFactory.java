@@ -2,6 +2,7 @@ package cn.javaer.snippets.box.spring.data.jooq.jdbc;
 
 import org.jooq.DSLContext;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jdbc.core.JdbcAggregateTemplate;
 import org.springframework.data.jdbc.core.convert.DataAccessStrategy;
 import org.springframework.data.jdbc.core.convert.JdbcConverter;
@@ -29,10 +30,12 @@ public class JooqJdbcRepositoryFactory extends JdbcRepositoryFactory {
     private EntityCallbacks entityCallbacks;
 
     private final DSLContext dslContext;
+    private final AuditorAware<?> auditorAware;
 
     public JooqJdbcRepositoryFactory(final DataAccessStrategy dataAccessStrategy, final RelationalMappingContext context,
                                      final JdbcConverter converter, final ApplicationEventPublisher publisher,
-                                     final NamedParameterJdbcOperations operations, final DSLContext dslContext) {
+                                     final NamedParameterJdbcOperations operations, final DSLContext dslContext,
+                                     final AuditorAware<?> auditorAware) {
 
         super(dataAccessStrategy, context, converter, publisher, operations);
         Assert.notNull(dslContext, "DSLContext must not be null!");
@@ -43,6 +46,7 @@ public class JooqJdbcRepositoryFactory extends JdbcRepositoryFactory {
         this.accessStrategy = dataAccessStrategy;
         this.operations = operations;
         this.dslContext = dslContext;
+        this.auditorAware = auditorAware;
     }
 
     @Override
@@ -53,7 +57,7 @@ public class JooqJdbcRepositoryFactory extends JdbcRepositoryFactory {
         final SimpleJooqJdbcRepository<?, Object> repository = new SimpleJooqJdbcRepository<>(
                 this.dslContext, this.context,
                 this.context.getRequiredPersistentEntity(repositoryInformation.getDomainType()),
-                template, this.operations, this.converter
+                template, this.operations, this.converter, this.auditorAware
         );
 
         if (this.entityCallbacks != null) {

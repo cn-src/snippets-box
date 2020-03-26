@@ -5,6 +5,7 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
+import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jdbc.core.convert.DataAccessStrategy;
 import org.springframework.data.jdbc.core.convert.DefaultDataAccessStrategy;
 import org.springframework.data.jdbc.core.convert.JdbcConverter;
@@ -20,6 +21,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.util.Assert;
 
 import java.io.Serializable;
+import java.util.Optional;
 
 /**
  * @author cn-src
@@ -38,6 +40,7 @@ public class JooqJdbcRepositoryFactoryBean<T extends Repository<S, ID>, S, ID ex
     private EntityCallbacks entityCallbacks;
 
     private DSLContext dslContext;
+    private AuditorAware<?> auditorAware;
 
     protected JooqJdbcRepositoryFactoryBean(final Class<? extends T> repositoryInterface) {
         super(repositoryInterface);
@@ -55,7 +58,7 @@ public class JooqJdbcRepositoryFactoryBean<T extends Repository<S, ID>, S, ID ex
     protected RepositoryFactorySupport doCreateRepositoryFactory() {
 
         final JooqJdbcRepositoryFactory jdbcRepositoryFactory = new JooqJdbcRepositoryFactory(this.dataAccessStrategy, this.mappingContext,
-                this.converter, this.publisher, this.operations, this.dslContext);
+                this.converter, this.publisher, this.operations, this.dslContext, this.auditorAware);
         jdbcRepositoryFactory.setQueryMappingConfiguration(this.queryMappingConfiguration);
         jdbcRepositoryFactory.setEntityCallbacks(this.entityCallbacks);
 
@@ -104,6 +107,13 @@ public class JooqJdbcRepositoryFactoryBean<T extends Repository<S, ID>, S, ID ex
 
         Assert.state(this.mappingContext != null, "MappingContext is required and must not be null!");
         Assert.state(this.converter != null, "RelationalConverter is required and must not be null!");
+
+        if (this.auditorAware == null) {
+
+            Assert.state(this.beanFactory != null, "If no AuditorAware are set a BeanFactory must be available.");
+
+            this.auditorAware = this.beanFactory.getBeanProvider(AuditorAware.class).getIfAvailable(() -> Optional::empty);
+        }
 
         if (this.dslContext == null) {
 
