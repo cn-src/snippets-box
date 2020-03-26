@@ -6,6 +6,7 @@ import org.jooq.DSLContext;
 import org.jooq.Query;
 import org.jooq.Record;
 import org.jooq.Table;
+import org.jooq.UpdateConditionStep;
 import org.jooq.impl.DSL;
 import org.simpleflatmapper.jooq.SelectQueryMapper;
 import org.simpleflatmapper.jooq.SelectQueryMapperFactory;
@@ -373,8 +374,9 @@ public class SimpleJooqJdbcRepository<T, ID> extends AbstractJooqRepository<T> i
 
     @Override
     public T updateByIdAndCreator(final T instance) {
-
-        return null;
+        final UpdateConditionStep<Record> updateStep = this.updateByIdAndCreatorStep(instance);
+        this.jdbcOperations.update(updateStep.getSQL(), updateStep.getBindValues());
+        return instance;
     }
 
     protected <E> EntityRowMapper<E> getEntityRowMapper(final Class<E> domainType) {

@@ -221,12 +221,13 @@ public abstract class AbstractJooqRepository<T> {
                 idCondition = DSL.field(property.getColumnName()).eq(this.getProperty(property, instance));
                 continue;
             }
+            final Object currentAuditor = this.auditorAware.getCurrentAuditor().get();
             if (property.isAnnotationPresent(CreatedBy.class) && this.auditorAware.getCurrentAuditor().isPresent()) {
-                createdByCondition = DSL.field(property.getColumnName()).eq(this.auditorAware.getCurrentAuditor().get());
+                createdByCondition = DSL.field(property.getColumnName()).eq(currentAuditor);
                 continue;
             }
             if (property.isAnnotationPresent(LastModifiedBy.class) && this.auditorAware.getCurrentAuditor().isPresent()) {
-                updateStepMore = updateStep.set(DSL.field(property.getColumnName()), this.auditorAware.getCurrentAuditor().get());
+                updateStepMore = updateStep.set(DSL.field(property.getColumnName()), currentAuditor);
                 continue;
             }
             if (property.isAnnotationPresent(LastModifiedDate.class)) {
