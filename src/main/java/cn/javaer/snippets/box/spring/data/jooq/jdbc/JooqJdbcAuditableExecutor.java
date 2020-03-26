@@ -1,9 +1,13 @@
 package cn.javaer.snippets.box.spring.data.jooq.jdbc;
 
+import java.util.Optional;
+
 /**
  * @author cn-src
  */
 public interface JooqJdbcAuditableExecutor<T, ID> {
+
+    Optional<T> findByIdAndCreator(final ID id);
 
     Iterable<T> findAllByCreator();
 

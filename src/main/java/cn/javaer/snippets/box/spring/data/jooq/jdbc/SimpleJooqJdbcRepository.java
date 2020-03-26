@@ -374,8 +374,22 @@ public class SimpleJooqJdbcRepository<T, ID> extends AbstractJooqRepository<T, I
     }
 
     @Override
+    public Optional<T> findByIdAndCreator(final ID id) {
+        final Query query = this.findByIdAndCreatorStep(id);
+
+        try {
+            //noinspection ConstantConditions
+            return Optional.of(this.jdbcOperations.queryForObject(query.getSQL(), query.getBindValues().toArray(),
+                    this.repositoryEntityRowMapper));
+        }
+        catch (final EmptyResultDataAccessException emptyResultDataAccessException) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
     public Iterable<T> findAllByCreator() {
-        
+
         final Query query = this.findAllByCreatorStep();
 
         return this.jdbcOperations.query(query.getSQL(), query.getBindValues().toArray(),
