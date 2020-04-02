@@ -16,10 +16,10 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
 
         <eclipse-collections.version>10.2.0</eclipse-collections.version>
-        <spring-boot.version>2.2.5.RELEASE</spring-boot.version>
+        <spring-boot.version>2.2.6.RELEASE</spring-boot.version>
         <simpleflatmapper.version>8.2.1</simpleflatmapper.version>
-        <kryo.version>5.0.0-RC4</kryo.version>
-        <classgraph.version>4.8.65</classgraph.version>
+        <kryo.version>5.0.0-RC5</kryo.version>
+        <classgraph.version>4.8.67</classgraph.version>
     </properties>
 
     <dependencies>
