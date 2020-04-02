@@ -65,9 +65,9 @@ public class ConditionBuilder {
         if (this.conditions.isEmpty()) {
             return null;
         }
-        final Condition condition = this.conditions.get(0);
+        Condition condition = this.conditions.get(0);
         for (int i = 1, size = this.conditions.size(); i < size; i++) {
-            condition.and(this.conditions.get(i));
+            condition = condition.and(this.conditions.get(i));
         }
         return condition;
     }
