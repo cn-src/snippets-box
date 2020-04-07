@@ -46,7 +46,7 @@ public class ConditionBuilder {
     }
 
     @SafeVarargs
-    public final <T> ConditionBuilder append(final Function<T[], Condition> fun, final T... array) {
+    public final <T> ConditionBuilder appendWithArray(final Function<T[], Condition> fun, final T... array) {
         if (null == array || array.length == 0) {
             return this;
         }
@@ -55,7 +55,7 @@ public class ConditionBuilder {
         return this;
     }
 
-    public ConditionBuilder append(final Function<int[], Condition> fun, final int... array) {
+    public ConditionBuilder appendWithArray(final Function<int[], Condition> fun, final int... array) {
         if (null == array || array.length == 0) {
             return this;
         }
@@ -64,7 +64,7 @@ public class ConditionBuilder {
         return this;
     }
 
-    public ConditionBuilder append(final Function<long[], Condition> fun, final long... array) {
+    public ConditionBuilder appendWithArray(final Function<long[], Condition> fun, final long... array) {
         if (null == array || array.length == 0) {
             return this;
         }
