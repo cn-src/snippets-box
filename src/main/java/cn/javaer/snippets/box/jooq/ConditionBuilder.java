@@ -1,16 +1,18 @@
 package cn.javaer.snippets.box.jooq;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jooq.Condition;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -23,11 +25,19 @@ public class ConditionBuilder {
     @FunctionalInterface
     public interface Function3<T1, T2, T3>
             extends Serializable {
-        Condition apply(T1 argument1, T2 argument2, T3 argument3);
+        /**
+         * The three parameters Function.
+         *
+         * @param t1 t1
+         * @param t2 t2
+         * @param t3 t3
+         *
+         * @return Condition
+         */
+        Condition apply(T1 t1, T2 t2, T3 t3);
     }
 
     private final List<Condition> conditions = new ArrayList<>();
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public ConditionBuilder append(final Supplier<Condition> supplier) {
         this.conditions.add(supplier.get());
@@ -40,6 +50,42 @@ public class ConditionBuilder {
         }
 
         this.conditions.add(fun.apply(value));
+        return this;
+    }
+
+    @SafeVarargs
+    public final <T> ConditionBuilder append(final Function<T[], Condition> fun, final T... values) {
+        if (ObjectUtils.isEmpty(values)) {
+            return this;
+        }
+
+        //noinspection unchecked
+        final T[] objects = (T[]) Arrays.stream(values)
+                .filter(Objects::nonNull)
+                .toArray();
+
+        if (objects.length == 0) {
+            return this;
+        }
+
+        this.conditions.add(fun.apply(objects));
+        return this;
+    }
+
+    public ConditionBuilder append(final Function<String[], Condition> fun, final String... values) {
+        if (ObjectUtils.isEmpty(values)) {
+            return this;
+        }
+
+        final String[] toArray = Arrays.stream(values)
+                .filter(StringUtils::hasLength)
+                .toArray(String[]::new);
+
+        if (toArray.length == 0) {
+            return this;
+        }
+
+        this.conditions.add(fun.apply(toArray));
         return this;
     }
 
