@@ -10,13 +10,19 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
  * @author cn-src
  */
 public class ConditionBuilder {
+    public interface ConditionFunction<T> {
+        Condition apply(T t);
+    }
+
+    public interface ConditionArrayFunction<T> {
+        Condition apply(T[] t);
+    }
 
     private final List<Condition> conditions = new ArrayList<>();
 
@@ -25,7 +31,7 @@ public class ConditionBuilder {
         return this;
     }
 
-    public <T> ConditionBuilder append(final Function<T, Condition> fun, final T value) {
+    public <T> ConditionBuilder append(final ConditionFunction<T> fun, final T value) {
         if (ObjectUtils.isEmpty(value)) {
             return this;
         }
@@ -34,12 +40,12 @@ public class ConditionBuilder {
         return this;
     }
 
-    public ConditionBuilder append(final Function<String, Condition> fun, final String value) {
-        if (ObjectUtils.isEmpty(value)) {
+    public <T> ConditionBuilder append(final ConditionArrayFunction<T> fun, final T... array) {
+        if (null == array || array.length == 0) {
             return this;
         }
 
-        this.conditions.add(fun.apply(value));
+        this.conditions.add(fun.apply(array));
         return this;
     }
 
