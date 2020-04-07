@@ -15,6 +15,6 @@ class ConditionBuilderTest {
         final Field<String[]> arrayField = DSL.field("array", String[].class);
         new ConditionBuilder()
                 .append(objectField::contains, "")
-                .appendWithArray(arrayField::contains, "");
+                .append(arrayField::contains, "", "");
     }
 }
