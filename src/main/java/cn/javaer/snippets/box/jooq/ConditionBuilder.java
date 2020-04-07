@@ -45,55 +45,22 @@ public class ConditionBuilder {
     }
 
     public <T> ConditionBuilder append(final Function<T, Condition> fun, final T value) {
-        if (ObjectUtils.isEmpty(value)) {
+        final T obj = this.filter(value);
+        if (ObjectUtils.isEmpty(obj)) {
             return this;
         }
 
-        this.conditions.add(fun.apply(value));
-        return this;
-    }
-
-    @SafeVarargs
-    public final <T> ConditionBuilder append(final Function<T[], Condition> fun, final T... values) {
-        if (ObjectUtils.isEmpty(values)) {
-            return this;
-        }
-
-        //noinspection unchecked
-        final T[] objects = (T[]) Arrays.stream(values)
-                .filter(Objects::nonNull)
-                .toArray();
-
-        if (objects.length == 0) {
-            return this;
-        }
-
-        this.conditions.add(fun.apply(objects));
-        return this;
-    }
-
-    public ConditionBuilder append(final Function<String[], Condition> fun, final String... values) {
-        if (ObjectUtils.isEmpty(values)) {
-            return this;
-        }
-
-        final String[] toArray = Arrays.stream(values)
-                .filter(StringUtils::hasLength)
-                .toArray(String[]::new);
-
-        if (toArray.length == 0) {
-            return this;
-        }
-
-        this.conditions.add(fun.apply(toArray));
+        this.conditions.add(fun.apply(obj));
         return this;
     }
 
     public <T1, T2> ConditionBuilder append(final BiFunction<T1, T2, Condition> fun, final T1 t1, final T2 t2) {
-        if (null == t1 || null == t2) {
+        final T1 obj1 = this.filter(t1);
+        final T2 obj2 = this.filter(t2);
+        if (ObjectUtils.isEmpty(obj1) || ObjectUtils.isEmpty(obj2)) {
             return this;
         }
-        this.conditions.add(fun.apply(t1, t2));
+        this.conditions.add(fun.apply(obj1, obj2));
         return this;
     }
 
@@ -108,11 +75,32 @@ public class ConditionBuilder {
     }
 
     public <T1, T2, T3> ConditionBuilder append(final Function3<T1, T2, T3> fun, final T1 t1, final T2 t2, final T3 t3) {
-        if (t1 == null || t2 == null || t3 == null) {
+        final T1 obj1 = this.filter(t1);
+        final T2 obj2 = this.filter(t2);
+        final T3 obj3 = this.filter(t3);
+        if (ObjectUtils.isEmpty(obj1) || ObjectUtils.isEmpty(obj2) || ObjectUtils.isEmpty(obj3)) {
             return this;
         }
-        this.conditions.add(fun.apply(t1, t2, t3));
+        this.conditions.add(fun.apply(obj1, obj2, obj3));
         return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> T filter(final T t) {
+        if (null == t) {
+            return null;
+        }
+        if (t instanceof String[]) {
+            return (T) Arrays.stream((String[]) t)
+                    .filter(StringUtils::hasLength)
+                    .toArray(String[]::new);
+        }
+        if (t instanceof Object[]) {
+            return (T) Arrays.stream((Object[]) t)
+                    .filter(Objects::nonNull)
+                    .toArray();
+        }
+        return t;
     }
 
     @Nullable

@@ -24,7 +24,7 @@ class ConditionBuilderTest {
 
         final Condition condition = new ConditionBuilder()
                 .append(objectField::contains, "object")
-                .append(arrayField::contains, "str1", "str2")
+                .append(arrayField::contains, new String[]{"str1", "str2"})
                 .dateTime(dateTimeField::betweenSymmetric, LocalDate.now(), LocalDate.now())
                 .append(Sql::arrayContained, arrayField, new String[]{"value"})
                 .append(Sql::jsonbContains, jsonbField, "key", "value")
