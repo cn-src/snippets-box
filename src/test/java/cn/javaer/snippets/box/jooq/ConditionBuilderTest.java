@@ -11,8 +11,10 @@ class ConditionBuilderTest {
 
     @Test
     void append() {
-        final Field<String[]> nameField = DSL.field("name", String[].class);
+        final Field<String> objectField = DSL.field("object", String.class);
+        final Field<String[]> arrayField = DSL.field("array", String[].class);
         new ConditionBuilder()
-                .appendWithArray(nameField::contains, "");
+                .append(objectField::contains, "")
+                .appendWithArray(arrayField::contains, "");
     }
 }
