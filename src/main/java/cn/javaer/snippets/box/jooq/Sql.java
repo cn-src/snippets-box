@@ -33,4 +33,9 @@ public class Sql {
             throw new IllegalStateException(e);
         }
     }
+
+    public static Condition jsonbContains(final Field<JSONB> jsonField, final JSONB jsonb) {
+        return DSL.condition("{0}::jsonb @> {1}::jsonb", jsonField,
+                DSL.val(jsonb, jsonField.getDataType()));
+    }
 }
