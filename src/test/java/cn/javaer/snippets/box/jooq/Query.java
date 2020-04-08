@@ -13,11 +13,11 @@ public class Query {
 
     private String str1;
 
-    @Contains
+    @ConditionContains
     private String str2;
 
     private JSONB jsonb1;
 
-    @Contains
+    @ConditionContains
     private JSONB jsonb2;
 }

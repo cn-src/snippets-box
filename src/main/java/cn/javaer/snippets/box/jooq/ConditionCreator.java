@@ -42,7 +42,7 @@ public class ConditionCreator {
                 //noinspection rawtypes
                 final Field jooqField = DSL.field(name);
                 if (null != field) {
-                    if (field.getAnnotation(Contains.class) != null) {
+                    if (field.getAnnotation(ConditionContains.class) != null) {
                         if (dr.getPropertyType().equals(JSONB.class)) {
                             @SuppressWarnings("rawtypes") final Field jsonField = jooqField;
                             //noinspection unchecked
@@ -53,7 +53,7 @@ public class ConditionCreator {
                             conditions.add(jooqField.contains(value));
                         }
                     }
-                    else if (field.getAnnotation(Contained.class) != null && dr.getPropertyType().equals(String[].class)) {
+                    else if (field.getAnnotation(ConditionContained.class) != null && dr.getPropertyType().equals(String[].class)) {
                         //noinspection unchecked
                         conditions.add(Sql.arrayContained(jooqField, (String[]) value));
                     }
