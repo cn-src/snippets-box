@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Condition 条件创建器，根据 POJO 来动态创建条件.
+ *
  * @author cn-src
  */
 public class ConditionCreator {
@@ -22,7 +24,7 @@ public class ConditionCreator {
         if (query == null) {
             return null;
         }
-        
+
         final List<Condition> conditions = new ArrayList<>();
         final Class<?> clazz = query.getClass();
         final PropertyDescriptor[] descriptors = BeanUtils.getPropertyDescriptors(clazz);
@@ -37,18 +39,28 @@ public class ConditionCreator {
                     continue;
                 }
                 final java.lang.reflect.Field field = ReflectionUtils.findField(clazz, name);
-                if (null != field && field.getAnnotation(Contains.class) != null) {
-                    if (dr.getPropertyType().equals(JSONB.class)) {
-                        @SuppressWarnings("rawtypes") final Field jsonField = DSL.field(name);
-                        //noinspection unchecked
-                        conditions.add(Sql.jsonbContains(jsonField, (JSONB) value));
+                //noinspection rawtypes
+                final Field jooqField = DSL.field(name);
+                if (null != field) {
+                    if (field.getAnnotation(Contains.class) != null) {
+                        if (dr.getPropertyType().equals(JSONB.class)) {
+                            @SuppressWarnings("rawtypes") final Field jsonField = jooqField;
+                            //noinspection unchecked
+                            conditions.add(Sql.jsonbContains(jsonField, (JSONB) value));
+                        }
+                        else {
+                            //noinspection unchecked
+                            conditions.add(jooqField.contains(value));
+                        }
                     }
-                    else {
-                        conditions.add(DSL.field(name).contains(value));
+                    else if (field.getAnnotation(Contained.class) != null && dr.getPropertyType().equals(String[].class)) {
+                        //noinspection unchecked
+                        conditions.add(Sql.arrayContained(jooqField, (String[]) value));
                     }
                 }
                 else {
-                    conditions.add(DSL.field(name).eq(value));
+                    //noinspection unchecked
+                    conditions.add(jooqField.eq(value));
                 }
             }
         }

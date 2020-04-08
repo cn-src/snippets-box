@@ -18,6 +18,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
+ * Condition 条件构建器, 会忽略一些空值的条件.
+ *
  * @author cn-src
  */
 public class ConditionBuilder {
