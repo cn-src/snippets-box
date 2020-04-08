@@ -19,6 +19,10 @@ import java.util.List;
 public class ConditionCreator {
 
     public static Condition create(final Object query) {
+        if (query == null) {
+            return null;
+        }
+        
         final List<Condition> conditions = new ArrayList<>();
         final Class<?> clazz = query.getClass();
         final PropertyDescriptor[] descriptors = BeanUtils.getPropertyDescriptors(clazz);
