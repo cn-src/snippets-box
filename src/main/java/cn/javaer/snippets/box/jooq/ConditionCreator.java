@@ -31,36 +31,30 @@ public class ConditionCreator {
         try {
             for (final PropertyDescriptor dr : descriptors) {
                 final String name = dr.getName();
-                if ("class".equals(name)) {
+                final java.lang.reflect.Field field = ReflectionUtils.findField(clazz, name);
+                if ("class".equals(name) || field == null || field.getAnnotation(ConditionIgnore.class) != null) {
                     continue;
                 }
                 final Object value = dr.getReadMethod().invoke(query);
                 if (ObjectUtils.isEmpty(value)) {
                     continue;
                 }
-                final java.lang.reflect.Field field = ReflectionUtils.findField(clazz, name);
                 //noinspection rawtypes
                 final Field jooqField = DSL.field(name);
-                if (null != field) {
-                    if (field.getAnnotation(ConditionContains.class) != null) {
-                        if (dr.getPropertyType().equals(JSONB.class)) {
-                            @SuppressWarnings("rawtypes") final Field jsonField = jooqField;
-                            //noinspection unchecked
-                            conditions.add(Sql.jsonbContains(jsonField, (JSONB) value));
-                        }
-                        else {
-                            //noinspection unchecked
-                            conditions.add(jooqField.contains(value));
-                        }
-                    }
-                    else if (field.getAnnotation(ConditionContained.class) != null && dr.getPropertyType().equals(String[].class)) {
+                if (field.getAnnotation(ConditionContains.class) != null) {
+                    if (dr.getPropertyType().equals(JSONB.class)) {
+                        @SuppressWarnings("rawtypes") final Field jsonField = jooqField;
                         //noinspection unchecked
-                        conditions.add(Sql.arrayContained(jooqField, (String[]) value));
+                        conditions.add(Sql.jsonbContains(jsonField, (JSONB) value));
+                    }
+                    else {
+                        //noinspection unchecked
+                        conditions.add(jooqField.contains(value));
                     }
                 }
-                else {
+                else if (field.getAnnotation(ConditionContained.class) != null && dr.getPropertyType().equals(String[].class)) {
                     //noinspection unchecked
-                    conditions.add(jooqField.eq(value));
+                    conditions.add(Sql.arrayContained(jooqField, (String[]) value));
                 }
             }
         }
