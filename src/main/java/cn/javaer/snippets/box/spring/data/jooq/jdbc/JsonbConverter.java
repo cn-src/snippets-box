@@ -11,6 +11,9 @@ import org.springframework.data.convert.ReadingConverter;
 @ReadingConverter
 public enum JsonbConverter implements Converter<PGobject, JSONB> {
 
+    /**
+     * 单实例.
+     */
     INSTANCE;
 
     @Override
