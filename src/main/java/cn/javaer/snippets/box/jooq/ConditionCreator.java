@@ -21,6 +21,14 @@ import java.util.List;
 public class ConditionCreator {
 
     public static Condition create(final Object query) {
+        return ConditionCreator.create(query, false);
+    }
+
+    public static Condition createWithIgnoreUnannotated(final Object query) {
+        return ConditionCreator.create(query, true);
+    }
+
+    private static Condition create(final Object query, final boolean ignoreUnannotated) {
         if (query == null) {
             return null;
         }
@@ -55,6 +63,12 @@ public class ConditionCreator {
                 else if (field.getAnnotation(ConditionContained.class) != null && dr.getPropertyType().equals(String[].class)) {
                     //noinspection unchecked
                     conditions.add(Sql.arrayContained(jooqField, (String[]) value));
+                }
+                else {
+                    if (!ignoreUnannotated) {
+                        //noinspection unchecked
+                        conditions.add(jooqField.eq(value));
+                    }
                 }
             }
         }
