@@ -13,7 +13,7 @@ class ConditionCreatorTest {
 
     @Test
     void of() {
-        final Condition condition = ConditionCreator.create(new Query("demo", "demo",
+        final Condition condition = ConditionCreator.createWithIgnoreUnannotated(new Query("demo", "demo",
                 JSONB.valueOf("{\"k\":\"v\"}"),
                 JSONB.valueOf("{\"k\":\"v\"}")));
 
