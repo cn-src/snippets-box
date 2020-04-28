@@ -24,6 +24,8 @@ import java.util.function.Supplier;
  */
 public class ConditionBuilder {
 
+    private final List<Condition> conditions = new ArrayList<>();
+    
     @FunctionalInterface
     public interface Function3<T1, T2, T3>
             extends Serializable {
@@ -38,8 +40,6 @@ public class ConditionBuilder {
          */
         Condition apply(T1 t1, T2 t2, T3 t3);
     }
-
-    private final List<Condition> conditions = new ArrayList<>();
 
     public ConditionBuilder append(final Supplier<Condition> supplier) {
         this.conditions.add(supplier.get());
