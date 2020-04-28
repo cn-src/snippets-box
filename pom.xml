@@ -173,7 +173,7 @@
         </plugins>
     </build>
     <name>snippets-box</name>
-    <description>Gist Box</description>
+    <description>Snippets Box</description>
     <url>https://github.com/cn-src/snippets-box</url>
     <licenses>
         <license>
