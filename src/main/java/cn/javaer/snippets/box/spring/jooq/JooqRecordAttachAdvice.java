@@ -53,7 +53,7 @@ public class JooqRecordAttachAdvice extends RequestBodyAdviceAdapter implements 
 
     @Override
     public void setBeanFactory(final BeanFactory beanFactory) {
-        final Pair<Optional<Configuration>, Optional<Map<String, Configuration>>> pair = BeanUtils.getJooqConfiguration(beanFactory);
+        final Pair<Optional<Configuration>, Optional<Map<String, Configuration>>> pair = JooqUtils.getJooqConfiguration(beanFactory);
         this.primaryConfiguration = pair.getFirst().orElse(null);
         this.configurationMap = pair.getSecond().orElse(null);
     }

@@ -12,8 +12,8 @@ import java.util.Optional;
 /**
  * @author cn-src
  */
-public class BeanUtils {
-    private BeanUtils() {}
+public class JooqUtils {
+    private JooqUtils() {}
 
     public static Pair<Optional<Configuration>, Optional<Map<String, Configuration>>> getJooqConfiguration(final BeanFactory beanFactory) {
         final ConfigurableListableBeanFactory listableBeanFactory = (ConfigurableListableBeanFactory) beanFactory;

@@ -1,9 +1,9 @@
 package cn.javaer.snippets.spring.boot.autoconfigure.jooq;
 
-import cn.javaer.snippets.box.spring.jooq.BeanUtils;
 import cn.javaer.snippets.box.spring.jooq.JooqRecordAttachAdvice;
 import cn.javaer.snippets.box.spring.jooq.JooqRecordClassConverter;
 import cn.javaer.snippets.box.spring.jooq.JooqRecordIgnoreSupperIntrospector;
+import cn.javaer.snippets.box.spring.jooq.JooqUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jooq.DSLContext;
 import org.springframework.beans.factory.BeanFactory;
@@ -77,7 +77,7 @@ public class JooqRecordAutoConfiguration implements InitializingBean {
 
         @Override
         public void afterPropertiesSet() {
-            final org.jooq.Configuration configuration = BeanUtils.getJooqConfiguration(this.beanFactory).getFirst().orElseThrow(IllegalStateException::new);
+            final org.jooq.Configuration configuration = JooqUtils.getJooqConfiguration(this.beanFactory).getFirst().orElseThrow(IllegalStateException::new);
             final JooqRecordClassConverter<FormattingConversionService> jooqRecordClassConverter = new JooqRecordClassConverter<>(this.conversionService);
             jooqRecordClassConverter.setConfiguration(configuration);
         }
