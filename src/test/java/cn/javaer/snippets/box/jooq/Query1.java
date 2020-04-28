@@ -9,7 +9,7 @@ import org.jooq.JSONB;
  */
 @Data
 @AllArgsConstructor
-public class Query {
+public class Query1 {
 
     private String str1;
 
