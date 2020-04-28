@@ -12,7 +12,7 @@ import java.util.Collections;
 /**
  * @author cn-src
  */
-public class Sql {
+public abstract class Sql {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 

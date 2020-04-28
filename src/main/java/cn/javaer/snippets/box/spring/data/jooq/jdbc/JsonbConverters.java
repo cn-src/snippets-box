@@ -18,7 +18,7 @@ import java.util.List;
  */
 public abstract class JsonbConverters {
     private static final List<Converter<?, ?>> CONVERTERS = new ArrayList<>();
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     static {
         JsonbConverters.CONVERTERS.add(ToJsonbConverter.INSTANCE);
@@ -70,7 +70,7 @@ public abstract class JsonbConverters {
         @Override
         public JsonNode convert(final PGobject source) {
             try {
-                return OBJECT_MAPPER.readTree(source.getValue());
+                return objectMapper.readTree(source.getValue());
             }
             catch (final JsonProcessingException e) {
                 throw new IllegalStateException(e);
@@ -89,7 +89,7 @@ public abstract class JsonbConverters {
         @Override
         public String convert(final JsonNode source) {
             try {
-                return OBJECT_MAPPER.writeValueAsString(source);
+                return objectMapper.writeValueAsString(source);
             }
             catch (final JsonProcessingException e) {
                 throw new IllegalStateException(e);

@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  *
  * @author cn-src
  */
-public class Tree {
+public abstract class Tree {
 
     private Tree() {
     }
