@@ -15,9 +15,13 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven.compiler.source>${java.version}</maven.compiler.source>
 
-        <eclipse-collections.version>10.2.0</eclipse-collections.version>
+        <maven-surefire-plugin.version>3.0.0-M4</maven-surefire-plugin.version>
+        <assertj-assertions-generator-maven-plugin.version>2.2.0</assertj-assertions-generator-maven-plugin.version>
+        <jacoco-maven-plugin.version>0.8.5</jacoco-maven-plugin.version>
+
         <spring-boot.version>2.2.6.RELEASE</spring-boot.version>
-        <simpleflatmapper.version>8.2.1</simpleflatmapper.version>
+        <eclipse-collections.version>10.2.0</eclipse-collections.version>
+        <simpleflatmapper.version>8.2.2</simpleflatmapper.version>
         <kryo.version>5.0.0-RC5</kryo.version>
         <classgraph.version>4.8.67</classgraph.version>
     </properties>
@@ -120,12 +124,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M4</version>
+                <version>${maven-surefire-plugin.version}</version>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.5</version>
+                <version>${jacoco-maven-plugin.version}</version>
                 <executions>
                     <execution>
                         <goals>
@@ -144,7 +148,7 @@
             <plugin>
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-assertions-generator-maven-plugin</artifactId>
-                <version>2.2.0</version>
+                <version>${assertj-assertions-generator-maven-plugin.version}</version>
                 <executions>
                     <execution>
                         <goals>
