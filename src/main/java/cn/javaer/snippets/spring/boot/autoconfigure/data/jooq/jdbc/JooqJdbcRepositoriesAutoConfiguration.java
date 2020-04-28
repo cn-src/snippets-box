@@ -18,8 +18,6 @@ import org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import java.util.Arrays;
-
 /**
  * @author cn-src
  * @see EnableJooqJdbcRepositories
@@ -44,7 +42,7 @@ public class JooqJdbcRepositoriesAutoConfiguration {
     static class SpringBootJooqJdbcConfiguration extends AbstractJdbcConfiguration {
         @Override
         public JdbcCustomConversions jdbcCustomConversions() {
-            return new JooqJdbcCustomConversions(Arrays.asList(JsonbConverters.JSONB_TO_CONVERTER, JsonbConverters.TO_JSONB_CONVERTER));
+            return new JooqJdbcCustomConversions(JsonbConverters.getConvertersToRegister());
         }
     }
 }

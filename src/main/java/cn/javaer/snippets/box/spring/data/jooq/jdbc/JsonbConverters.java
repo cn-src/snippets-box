@@ -6,13 +6,24 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.convert.ReadingConverter;
 import org.springframework.data.convert.WritingConverter;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * @author cn-src
  */
-public class JsonbConverters {
+public abstract class JsonbConverters {
+    private static final List<Converter<?, ?>> CONVERTERS = new ArrayList<>();
 
-    public static final ToJsonbConverter TO_JSONB_CONVERTER = ToJsonbConverter.INSTANCE;
-    public static final JsonbToConverter JSONB_TO_CONVERTER = JsonbToConverter.INSTANCE;
+    static {
+        JsonbConverters.CONVERTERS.add(ToJsonbConverter.INSTANCE);
+        JsonbConverters.CONVERTERS.add(JsonbToConverter.INSTANCE);
+    }
+
+    public static List<Converter<?, ?>> getConvertersToRegister() {
+        return Collections.unmodifiableList(JsonbConverters.CONVERTERS);
+    }
 
     @ReadingConverter
     private enum ToJsonbConverter implements Converter<PGobject, JSONB> {
