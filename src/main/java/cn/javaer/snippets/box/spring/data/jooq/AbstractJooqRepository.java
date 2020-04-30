@@ -207,7 +207,7 @@ public abstract class AbstractJooqRepository<T, ID> {
     }
 
     protected Query findByIdAndCreatorStep(final ID id) {
-        Assert.isTrue(this.auditorAware.getCurrentAuditor().isPresent(), "Auditor must be has");
+        Assert.isTrue(this.auditorAware.getCurrentAuditor().isPresent(), "Auditor must be not null");
         final String createColumnName = Objects.requireNonNull(this.repositoryEntity.getPersistentProperty(CreatedBy.class))
                 .getColumnName();
 
@@ -217,7 +217,7 @@ public abstract class AbstractJooqRepository<T, ID> {
     }
 
     protected Query findAllByCreatorStep() {
-        Assert.isTrue(this.auditorAware.getCurrentAuditor().isPresent(), "Auditor must be has");
+        Assert.isTrue(this.auditorAware.getCurrentAuditor().isPresent(), "Auditor must be not null");
         final String createColumnName = Objects.requireNonNull(this.repositoryEntity.getPersistentProperty(CreatedBy.class))
                 .getColumnName();
 
@@ -226,7 +226,7 @@ public abstract class AbstractJooqRepository<T, ID> {
     }
 
     protected UpdateConditionStep<Record> updateByIdAndCreatorStep(final T instance) {
-        Assert.isTrue(this.auditorAware.getCurrentAuditor().isPresent(), "Must be has auditor");
+        Assert.isTrue(this.auditorAware.getCurrentAuditor().isPresent(), "Auditor must be not null");
 
         final UpdateSetFirstStep<Record> updateStep = this.dsl.update(this.repositoryTable);
         UpdateSetMoreStep<Record> updateStepMore = null;
