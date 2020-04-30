@@ -45,6 +45,7 @@ import java.util.Optional;
  * @author cn-src
  */
 public abstract class AbstractJooqRepository<T, ID> {
+    protected static final String AUDITOR_MUST_BE_NOT_NULL = "Auditor must be not null";
     protected final DSLContext dsl;
     protected final RelationalMappingContext context;
     protected final RelationalPersistentEntity<T> repositoryEntity;
@@ -207,7 +208,7 @@ public abstract class AbstractJooqRepository<T, ID> {
     }
 
     protected Query findByIdAndCreatorStep(final ID id) {
-        Assert.isTrue(this.auditorAware.getCurrentAuditor().isPresent(), "Auditor must be not null");
+        Assert.isTrue(this.auditorAware.getCurrentAuditor().isPresent(), AUDITOR_MUST_BE_NOT_NULL);
         final String createColumnName = Objects.requireNonNull(this.repositoryEntity.getPersistentProperty(CreatedBy.class))
                 .getColumnName();
 
@@ -217,7 +218,7 @@ public abstract class AbstractJooqRepository<T, ID> {
     }
 
     protected Query findAllByCreatorStep() {
-        Assert.isTrue(this.auditorAware.getCurrentAuditor().isPresent(), "Auditor must be not null");
+        Assert.isTrue(this.auditorAware.getCurrentAuditor().isPresent(), AUDITOR_MUST_BE_NOT_NULL);
         final String createColumnName = Objects.requireNonNull(this.repositoryEntity.getPersistentProperty(CreatedBy.class))
                 .getColumnName();
 
@@ -226,7 +227,7 @@ public abstract class AbstractJooqRepository<T, ID> {
     }
 
     protected UpdateConditionStep<Record> updateByIdAndCreatorStep(final T instance) {
-        Assert.isTrue(this.auditorAware.getCurrentAuditor().isPresent(), "Auditor must be not null");
+        Assert.isTrue(this.auditorAware.getCurrentAuditor().isPresent(), AUDITOR_MUST_BE_NOT_NULL);
 
         final Object currentAuditor = this.auditorAware.getCurrentAuditor().get();
         final UpdateSetFirstStep<Record> updateStep = this.dsl.update(this.repositoryTable);
@@ -263,7 +264,7 @@ public abstract class AbstractJooqRepository<T, ID> {
 
     protected DeleteConditionStep<Record> deleteByIdAndCreatorStep(final ID id) {
         Assert.notNull(id, "Id must not be null");
-        Assert.isTrue(this.auditorAware.getCurrentAuditor().isPresent(), "Auditor must be has");
+        Assert.isTrue(this.auditorAware.getCurrentAuditor().isPresent(), AUDITOR_MUST_BE_NOT_NULL);
 
         final String createColumnName = Objects.requireNonNull(this.repositoryEntity.getPersistentProperty(CreatedBy.class))
                 .getColumnName();
