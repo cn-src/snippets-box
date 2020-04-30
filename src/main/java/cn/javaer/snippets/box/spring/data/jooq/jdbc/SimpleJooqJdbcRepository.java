@@ -6,7 +6,6 @@ import org.jooq.DSLContext;
 import org.jooq.DeleteConditionStep;
 import org.jooq.Query;
 import org.jooq.Record;
-import org.jooq.Table;
 import org.jooq.UpdateConditionStep;
 import org.jooq.impl.DSL;
 import org.simpleflatmapper.jooq.SelectQueryMapper;
@@ -351,8 +350,12 @@ public class SimpleJooqJdbcRepository<T, ID> extends AbstractJooqRepository<T, I
 
     @Override
     public long count(final Condition condition) {
-        final Table<Record> table = DSL.table(this.persistentEntity.getTableName());
-        return this.dsl.fetchCount(table, condition);
+        final Query query = this.dsl.selectCount()
+                .from(DSL.table(this.persistentEntity.getTableName()))
+                .where(condition)
+                .getQuery();
+        //noinspection ConstantConditions
+        return this.jdbcOperations.queryForObject(query.getSQL(), query.getBindValues().toArray(), Long.class);
     }
 
     @Override
