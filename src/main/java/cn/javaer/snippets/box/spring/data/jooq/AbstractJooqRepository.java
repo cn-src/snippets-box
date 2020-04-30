@@ -228,6 +228,7 @@ public abstract class AbstractJooqRepository<T, ID> {
     protected UpdateConditionStep<Record> updateByIdAndCreatorStep(final T instance) {
         Assert.isTrue(this.auditorAware.getCurrentAuditor().isPresent(), "Auditor must be not null");
 
+        final Object currentAuditor = this.auditorAware.getCurrentAuditor().get();
         final UpdateSetFirstStep<Record> updateStep = this.dsl.update(this.repositoryTable);
         UpdateSetMoreStep<Record> updateStepMore = null;
         Condition idCondition = null;
@@ -243,7 +244,6 @@ public abstract class AbstractJooqRepository<T, ID> {
                 idCondition = DSL.field(property.getColumnName()).eq(this.getProperty(property, instance));
                 continue;
             }
-            final Object currentAuditor = this.auditorAware.getCurrentAuditor().get();
             if (property.isAnnotationPresent(CreatedBy.class)) {
                 createdByCondition = DSL.field(property.getColumnName()).eq(currentAuditor);
                 continue;
