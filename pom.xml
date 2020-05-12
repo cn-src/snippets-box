@@ -24,6 +24,7 @@
         <simpleflatmapper.version>8.2.2</simpleflatmapper.version>
         <kryo.version>5.0.0-RC5</kryo.version>
         <classgraph.version>4.8.67</classgraph.version>
+        <springdoc.version>1.3.9</springdoc.version>
     </properties>
 
     <dependencies>
@@ -40,6 +41,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-jooq</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
             <optional>true</optional>
         </dependency>
 
@@ -67,6 +73,13 @@
             <groupId>io.github.classgraph</groupId>
             <artifactId>classgraph</artifactId>
             <version>${classgraph.version}</version>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <artifactId>springdoc-openapi-webmvc-core</artifactId>
+            <groupId>org.springdoc</groupId>
+            <version>${springdoc.version}</version>
             <optional>true</optional>
         </dependency>
 
