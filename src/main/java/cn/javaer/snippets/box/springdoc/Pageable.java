@@ -21,7 +21,7 @@ public class Pageable {
     @Parameter(name = "_size", description = "分页-大小", schema = @Schema(type = "integer", defaultValue = "20"))
     private Integer size;
 
-    @Parameter(name = "_sort", description = "分页-排序, 指定排序字段: 'sort=field1,field2', 指定排序方式: 'field1.dir=desc'默认为升序(asc)"
+    @Parameter(name = "_sort", description = "分页-排序, 指定排序字段: '_sort=field1,field2', 指定排序方式: 'field1.dir=desc'默认为升序(asc)"
             , array = @ArraySchema(schema = @Schema(type = "string")))
     private List<String> sort;
 
