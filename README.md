@@ -15,34 +15,6 @@ public interface CityRepository extends CrudRepository<City, Long> {
 }
 ```
 
-## jOOQ
-* 支持代码生成的 Record 类型，被 `@RequestBody` 注解时，绑定 `org.jooq.Configuration`（间接设置数据源）
-> 可选的 @RecordAttach("bean name") 注解用于指定 `org.jooq.Configuration` Bean
-* 自动填充审计字段 `cn.javaer.snippetsbox.jooq.AuditableRecordListener`
-```java
-@RestController
-public class DemoController {
-
-    @PostMapping(path = "/")
-    public void save(@RequestBody CityRecord updatableRecord) { 
-        // 已通过 updatableRecord.attach(xxx) 绑定数据源
-        updatableRecord.store();
-    }
-}
-```
-* 支持代码生成的 Record 类型，可将 id 转换成 Record 类型，同时绑定 `org.jooq.Configuration`（间接设置数据源）
-```java
-@RestController
-public class DemoController {
-
-    @GetMapping(path = "/{id}")
-    public void save(@PathVariable("id") CityRecord updatableRecord) { 
-        // 已通过 updatableRecord.attach(xxx) 绑定数据源
-        updatableRecord.refresh();
-    }
-}
-```
-
 * 支持代码生成的 Record 类型，jackson 序列化支持
 
 ## SimpleFlatMapper jOOQ 
@@ -59,13 +31,16 @@ public class DemoController {
 ## Kryo
 * Kryo [池化封装](https://github.com/EsotericSoftware/kryo#pooling)
 ```java
-KryoHelper kryoHelper = new KryoHelper(kryo -> {
-    kryo.register(User.class);
-});
+class Demo {
+    KryoHelper kryoHelper = new KryoHelper(kryo -> {
+        kryo.register(User.class);
+    });
 
-byte[] bytes = kryoHelper.writeClassAndObject(user);
-
-User user = kryoHelper.readClassAndObject(bytes);
+    void demo() {
+        byte[] bytes = kryoHelper.writeClassAndObject(user);
+        User user = kryoHelper.readClassAndObject(bytes);
+    }
+}
 ```  
 
 ## 数据结构
