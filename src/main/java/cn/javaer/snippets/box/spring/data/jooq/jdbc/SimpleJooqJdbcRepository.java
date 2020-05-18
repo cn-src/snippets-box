@@ -11,7 +11,6 @@ import org.jooq.impl.DSL;
 import org.simpleflatmapper.jooq.SelectQueryMapper;
 import org.simpleflatmapper.jooq.SelectQueryMapperFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
@@ -299,14 +298,6 @@ public class SimpleJooqJdbcRepository<T, ID> extends AbstractJooqRepository<T, I
         return this.count(example) > 0;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<T> findAll(final QueryStep queryStep) {
-        return this.queryMapper.asList(queryStep.step(this.dsl));
-    }
-
     @Override
     public Optional<T> findOne(final Condition condition) {
         final Query query = this.findWithConditionStep(condition);
@@ -353,14 +344,6 @@ public class SimpleJooqJdbcRepository<T, ID> extends AbstractJooqRepository<T, I
     @Override
     public boolean exists(final Condition condition) {
         return this.count(condition) > 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Optional<T> findOne(final QueryStep queryStep) {
-        return Optional.ofNullable(DataAccessUtils.nullableSingleResult(this.queryMapper.asList(queryStep.step(this.dsl))));
     }
 
     @Override
