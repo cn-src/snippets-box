@@ -81,6 +81,7 @@ public class JooqJdbcRepositoryFactory extends RepositoryFactorySupport {
                             Dialect.class,
                             QueryMappingConfiguration.class,
                             NamedParameterJdbcOperations.class);
+            this.constructor.setAccessible(true);
         }
         catch (final NoSuchMethodException | ClassNotFoundException e) {
             throw new IllegalStateException(e);
