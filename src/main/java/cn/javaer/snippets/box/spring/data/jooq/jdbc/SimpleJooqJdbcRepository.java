@@ -152,10 +152,10 @@ public class SimpleJooqJdbcRepository<T, ID> extends AbstractJooqRepository<T, I
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     @Transactional
     @Override
     public void deleteAll(final Iterable<? extends T> entities) {
-        //noinspection unchecked
         entities.forEach(it -> this.entityOperations.delete(it, (Class<T>) it.getClass()));
     }
 
@@ -186,7 +186,7 @@ public class SimpleJooqJdbcRepository<T, ID> extends AbstractJooqRepository<T, I
 
         int size = 0;
         for (final RelationalPersistentProperty persistentProperty : this.persistentEntity) {
-            final String columnName = persistentProperty.getColumnName();
+            final String columnName = persistentProperty.getColumnName().getReference();
             columnJoiner.add(columnName);
             valuesJoiner.add("?");
             size++;
@@ -219,9 +219,7 @@ public class SimpleJooqJdbcRepository<T, ID> extends AbstractJooqRepository<T, I
      */
     @Override
     public Iterable<T> findAll(final Sort sort) {
-        final Query query = this.findWithSortStep(sort);
-        return this.jdbcOperations.query(query.getSQL(), query.getBindValues().toArray(),
-                this.repositoryEntityRowMapper);
+        return this.entityOperations.findAll(this.repositoryEntityClass, sort);
     }
 
     /**
@@ -229,13 +227,7 @@ public class SimpleJooqJdbcRepository<T, ID> extends AbstractJooqRepository<T, I
      */
     @Override
     public Page<T> findAll(final Pageable pageable) {
-        final long count = this.count();
-        if (count == 0) {
-            return new PageImpl<>(Collections.emptyList());
-        }
-        final Query query = this.findWithPageableStep(pageable);
-        return new PageImpl<>(this.jdbcOperations.query(query.getSQL(), query.getBindValues().toArray(),
-                this.repositoryEntityRowMapper), pageable, count);
+        return this.entityOperations.findAll(this.repositoryEntityClass, pageable);
     }
 
     /**
@@ -351,7 +343,7 @@ public class SimpleJooqJdbcRepository<T, ID> extends AbstractJooqRepository<T, I
     @Override
     public long count(final Condition condition) {
         final Query query = this.dsl.selectCount()
-                .from(DSL.table(this.persistentEntity.getTableName()))
+                .from(DSL.table(this.persistentEntity.getTableName().getReference()))
                 .where(condition)
                 .getQuery();
         //noinspection ConstantConditions

@@ -61,7 +61,7 @@ public abstract class AbstractJooqRepository<T, ID> {
         this.context = context;
         this.repositoryEntity = repositoryEntity;
         this.auditorAware = auditorAware;
-        this.repositoryTable = DSL.table(repositoryEntity.getTableName());
+        this.repositoryTable = DSL.table(repositoryEntity.getTableName().getReference());
     }
 
     protected Query findWithConditionStep(final Condition condition) {
@@ -90,7 +90,7 @@ public abstract class AbstractJooqRepository<T, ID> {
 
     protected <S extends T> SelectConditionStep<Record> findWithExampleStep(final Example<S> example) {
         final RelationalPersistentEntity<S> persistentEntity = this.getRequiredPersistentEntity(example.getProbeType());
-        final Table<Record> table = DSL.table(persistentEntity.getTableName());
+        final Table<Record> table = DSL.table(persistentEntity.getTableName().getReference());
         final SelectConditionStep<Record> step = this.dsl.selectFrom(table).where();
         this.exampleStep(step, example, persistentEntity);
         return step;
@@ -110,7 +110,7 @@ public abstract class AbstractJooqRepository<T, ID> {
 
     protected <S extends T> Query countWithExampleStep(final Example<S> example) {
         final RelationalPersistentEntity<S> persistentEntity = this.getRequiredPersistentEntity(example.getProbeType());
-        final Table<Record> table = DSL.table(persistentEntity.getTableName());
+        final Table<Record> table = DSL.table(persistentEntity.getTableName().getReference());
         final SelectConditionStep<Record1<Integer>> step = this.dsl.selectCount().from(table).where();
         this.exampleStep(step, example, persistentEntity);
         return step;
@@ -130,7 +130,7 @@ public abstract class AbstractJooqRepository<T, ID> {
             final ExampleMatcher.PropertyValueTransformer transformer = exampleAccessor.getValueTransformerForPath(propertyName);
             final Optional<Object> optionalValue = transformer
                     .apply(Optional.ofNullable(beanWrapper.getPropertyValue(propertyName)));
-            final String columnName = persistentProperty.getColumnName();
+            final String columnName = persistentProperty.getColumnName().getReference();
 
             Condition condition = null;
             if (optionalValue.isPresent()) {
@@ -210,17 +210,17 @@ public abstract class AbstractJooqRepository<T, ID> {
     protected Query findByIdAndCreatorStep(final ID id) {
         Assert.isTrue(this.auditorAware.getCurrentAuditor().isPresent(), AUDITOR_MUST_BE_NOT_NULL);
         final String createColumnName = Objects.requireNonNull(this.repositoryEntity.getPersistentProperty(CreatedBy.class))
-                .getColumnName();
+                .getColumnName().getReference();
 
         return this.dsl.selectFrom(this.repositoryTable)
-                .where(DSL.field(this.repositoryEntity.getIdColumn()).eq(id))
+                .where(DSL.field(this.repositoryEntity.getIdColumn().getReference()).eq(id))
                 .and(DSL.field(createColumnName).eq(this.auditorAware.getCurrentAuditor().get()));
     }
 
     protected Query findAllByCreatorStep() {
         Assert.isTrue(this.auditorAware.getCurrentAuditor().isPresent(), AUDITOR_MUST_BE_NOT_NULL);
         final String createColumnName = Objects.requireNonNull(this.repositoryEntity.getPersistentProperty(CreatedBy.class))
-                .getColumnName();
+                .getColumnName().getReference();
 
         return this.dsl.selectFrom(this.repositoryTable)
                 .where(DSL.field(createColumnName).eq(this.auditorAware.getCurrentAuditor().get()));
@@ -241,23 +241,24 @@ public abstract class AbstractJooqRepository<T, ID> {
                     || property.isAnnotationPresent(ReadOnlyProperty.class)) {
                 continue;
             }
+            final String columnName = property.getColumnName().getReference();
             if (property.isIdProperty()) {
-                idCondition = DSL.field(property.getColumnName()).eq(this.getProperty(property, instance));
+                idCondition = DSL.field(columnName).eq(this.getProperty(property, instance));
                 continue;
             }
             if (property.isAnnotationPresent(CreatedBy.class)) {
-                createdByCondition = DSL.field(property.getColumnName()).eq(currentAuditor);
+                createdByCondition = DSL.field(columnName).eq(currentAuditor);
                 continue;
             }
             if (property.isAnnotationPresent(LastModifiedBy.class)) {
-                updateStepMore = updateStep.set(DSL.field(property.getColumnName()), currentAuditor);
+                updateStepMore = updateStep.set(DSL.field(columnName), currentAuditor);
                 continue;
             }
             if (property.isAnnotationPresent(LastModifiedDate.class)) {
-                updateStepMore = updateStep.set(DSL.field(property.getColumnName()), LocalDateTime.now());
+                updateStepMore = updateStep.set(DSL.field(columnName), LocalDateTime.now());
                 continue;
             }
-            updateStepMore = updateStep.set(DSL.field(property.getColumnName()), this.getProperty(property, instance));
+            updateStepMore = updateStep.set(DSL.field(columnName), this.getProperty(property, instance));
         }
         return Objects.requireNonNull(updateStepMore).where(Objects.requireNonNull(idCondition).and(Objects.requireNonNull(createdByCondition)));
     }
@@ -267,10 +268,10 @@ public abstract class AbstractJooqRepository<T, ID> {
         Assert.isTrue(this.auditorAware.getCurrentAuditor().isPresent(), AUDITOR_MUST_BE_NOT_NULL);
 
         final String createColumnName = Objects.requireNonNull(this.repositoryEntity.getPersistentProperty(CreatedBy.class))
-                .getColumnName();
+                .getColumnName().getReference();
 
         return this.dsl.deleteFrom(this.repositoryTable)
-                .where(DSL.field(this.repositoryEntity.getIdColumn()).eq(id))
+                .where(DSL.field(this.repositoryEntity.getIdColumn().getReference()).eq(id))
                 .and(DSL.field(createColumnName).eq(this.auditorAware.getCurrentAuditor().get()));
     }
 
