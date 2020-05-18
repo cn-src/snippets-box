@@ -25,7 +25,7 @@ public interface CityRepository extends CrudRepository<City, Long> {
 > Spring 默认不回滚受检查异常，会造成无法预计的情况。比如 lombok 的 `@SneakyThrows` 实现方式就是一种可避开编译器检查的方式。
                               
 ## Spring Data JDBC 支持(基于 jOOQ 实现)
-* 分页排序 `PagingAndSortingRepository` 接口的支持
+* ~~分页排序 `PagingAndSortingRepository` 接口的支持~~(2.3已官方默认实现)
 * 样例查询 `QueryByExampleExecutor` 接口的支持
 
 ## Kryo
