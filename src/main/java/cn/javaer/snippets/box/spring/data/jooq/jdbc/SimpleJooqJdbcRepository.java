@@ -8,8 +8,6 @@ import org.jooq.Query;
 import org.jooq.Record;
 import org.jooq.UpdateConditionStep;
 import org.jooq.impl.DSL;
-import org.simpleflatmapper.jooq.SelectQueryMapper;
-import org.simpleflatmapper.jooq.SelectQueryMapperFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.domain.Example;
@@ -44,7 +42,6 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class SimpleJooqJdbcRepository<T, ID> extends AbstractJooqRepository<T, ID> implements JooqJdbcRepository<T, ID> {
 
-    private final SelectQueryMapper<T> queryMapper;
     private final JdbcAggregateOperations entityOperations;
     private final JdbcOperations jdbcOperations;
     private final JdbcConverter jdbcConverter;
@@ -63,7 +60,6 @@ public class SimpleJooqJdbcRepository<T, ID> extends AbstractJooqRepository<T, I
         this.entityOperations = entityOperations;
         this.jdbcConverter = jdbcConverter;
         this.jdbcOperations = jdbcOperations.getJdbcOperations();
-        this.queryMapper = SelectQueryMapperFactory.newInstance().ignorePropertyNotFound().newMapper(persistentEntity.getType());
         this.repositoryEntityClass = persistentEntity.getType();
         this.repositoryEntityRowMapper = new EntityRowMapper<>(persistentEntity, jdbcConverter);
         this.persistentEntity = persistentEntity;
