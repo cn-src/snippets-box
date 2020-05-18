@@ -12,7 +12,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table("t_user")
+@Table("T_USER")
 public class User {
     @Id
     private Long id;
