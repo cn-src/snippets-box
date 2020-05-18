@@ -13,6 +13,7 @@ import org.springframework.data.jdbc.core.convert.SqlGeneratorSource;
 import org.springframework.data.jdbc.repository.QueryMappingConfiguration;
 import org.springframework.data.jdbc.repository.support.JdbcRepositoryFactoryBean;
 import org.springframework.data.mapping.callback.EntityCallbacks;
+import org.springframework.data.relational.core.dialect.Dialect;
 import org.springframework.data.relational.core.mapping.RelationalMappingContext;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
@@ -39,6 +40,8 @@ public class JooqJdbcRepositoryFactoryBean<T extends Repository<S, ID>, S, ID ex
     private NamedParameterJdbcOperations operations;
     private EntityCallbacks entityCallbacks;
 
+    private Dialect dialect;
+
     private DSLContext dslContext;
     private AuditorAware<?> auditorAware;
 
@@ -58,7 +61,7 @@ public class JooqJdbcRepositoryFactoryBean<T extends Repository<S, ID>, S, ID ex
     protected RepositoryFactorySupport doCreateRepositoryFactory() {
 
         final JooqJdbcRepositoryFactory jdbcRepositoryFactory = new JooqJdbcRepositoryFactory(this.dataAccessStrategy, this.mappingContext,
-                this.converter, this.publisher, this.operations, this.dslContext, this.auditorAware);
+                this.converter, this.dialect, this.publisher, this.operations, this.dslContext, this.auditorAware);
         jdbcRepositoryFactory.setQueryMappingConfiguration(this.queryMappingConfiguration);
         jdbcRepositoryFactory.setEntityCallbacks(this.entityCallbacks);
 
@@ -70,6 +73,11 @@ public class JooqJdbcRepositoryFactoryBean<T extends Repository<S, ID>, S, ID ex
 
         super.setMappingContext(mappingContext);
         this.mappingContext = mappingContext;
+    }
+
+    @Autowired
+    protected void setDialect(final Dialect dialect) {
+        this.dialect = dialect;
     }
 
     public void setDataAccessStrategy(final DataAccessStrategy dataAccessStrategy) {
@@ -85,10 +93,6 @@ public class JooqJdbcRepositoryFactoryBean<T extends Repository<S, ID>, S, ID ex
         this.operations = operations;
     }
 
-    public void setDslContext(final DSLContext dslContext) {
-        this.dslContext = dslContext;
-    }
-
     @Autowired
     public void setConverter(final JdbcConverter converter) {
         this.converter = converter;
@@ -100,6 +104,10 @@ public class JooqJdbcRepositoryFactoryBean<T extends Repository<S, ID>, S, ID ex
         super.setBeanFactory(beanFactory);
 
         this.beanFactory = beanFactory;
+    }
+
+    public void setDslContext(final DSLContext dslContext) {
+        this.dslContext = dslContext;
     }
 
     @Override
@@ -135,8 +143,10 @@ public class JooqJdbcRepositoryFactoryBean<T extends Repository<S, ID>, S, ID ex
 
             this.dataAccessStrategy = this.beanFactory.getBeanProvider(DataAccessStrategy.class)
                     .getIfAvailable(() -> {
+                        Assert.state(this.dialect != null, "Dialect is required and must not be null!");
 
-                        final SqlGeneratorSource sqlGeneratorSource = new SqlGeneratorSource(this.mappingContext);
+                        final SqlGeneratorSource sqlGeneratorSource = new SqlGeneratorSource(this.mappingContext, this.converter,
+                                this.dialect);
                         return new DefaultDataAccessStrategy(sqlGeneratorSource, this.mappingContext, this.converter,
                                 this.operations);
                     });
