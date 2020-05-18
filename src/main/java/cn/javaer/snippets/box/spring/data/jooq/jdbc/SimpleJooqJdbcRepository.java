@@ -18,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jdbc.core.JdbcAggregateOperations;
 import org.springframework.data.jdbc.core.convert.EntityRowMapper;
 import org.springframework.data.jdbc.core.convert.JdbcConverter;
+import org.springframework.data.mapping.PersistentPropertyAccessor;
 import org.springframework.data.relational.core.mapping.RelationalMappingContext;
 import org.springframework.data.relational.core.mapping.RelationalPersistentEntity;
 import org.springframework.data.relational.core.mapping.RelationalPersistentProperty;
@@ -193,9 +194,10 @@ public class SimpleJooqJdbcRepository<T, ID> extends AbstractJooqRepository<T, I
 
         final List<Object[]> batchValues = new ArrayList<>();
         for (final S entity : entities) {
+            final PersistentPropertyAccessor<S> propertyAccessor = this.persistentEntity.getPropertyAccessor(entity);
             final List<Object> values = new ArrayList<>(size);
-            for (final RelationalPersistentProperty persistentProperty : this.persistentEntity) {
-                final Object value = this.getProperty(persistentProperty, entity);
+            for (final RelationalPersistentProperty property : this.persistentEntity) {
+                final Object value = propertyAccessor.getProperty(property);
                 values.add(value);
             }
             batchValues.add(values.toArray());

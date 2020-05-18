@@ -25,18 +25,14 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.mapping.MappingException;
-import org.springframework.data.mapping.PersistentProperty;
+import org.springframework.data.mapping.PersistentPropertyAccessor;
 import org.springframework.data.relational.core.mapping.RelationalMappingContext;
 import org.springframework.data.relational.core.mapping.RelationalPersistentEntity;
 import org.springframework.data.relational.core.mapping.RelationalPersistentProperty;
 import org.springframework.data.support.ExampleMatcherAccessor;
 import org.springframework.data.util.DirectFieldAccessFallbackBeanWrapper;
-import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
-import org.springframework.util.ReflectionUtils;
 
-import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
@@ -235,6 +231,8 @@ public abstract class AbstractJooqRepository<T, ID> {
         Condition idCondition = null;
         Condition createdByCondition = null;
         final RelationalPersistentEntity<?> persistentEntity = this.getRequiredPersistentEntity(instance.getClass());
+        final PersistentPropertyAccessor<T> propertyAccessor = persistentEntity.getPropertyAccessor(instance);
+
         for (final RelationalPersistentProperty property : persistentEntity) {
             if (property.isTransient()
                     || property.isAnnotationPresent(CreatedDate.class)
@@ -243,7 +241,7 @@ public abstract class AbstractJooqRepository<T, ID> {
             }
             final String columnName = property.getColumnName().getReference();
             if (property.isIdProperty()) {
-                idCondition = DSL.field(columnName).eq(this.getProperty(property, instance));
+                idCondition = DSL.field(columnName).eq(propertyAccessor.getProperty(property));
                 continue;
             }
             if (property.isAnnotationPresent(CreatedBy.class)) {
@@ -258,7 +256,7 @@ public abstract class AbstractJooqRepository<T, ID> {
                 updateStepMore = updateStep.set(DSL.field(columnName), LocalDateTime.now());
                 continue;
             }
-            updateStepMore = updateStep.set(DSL.field(columnName), this.getProperty(property, instance));
+            updateStepMore = updateStep.set(DSL.field(columnName), propertyAccessor.getProperty(property));
         }
         return Objects.requireNonNull(updateStepMore).where(Objects.requireNonNull(idCondition).and(Objects.requireNonNull(createdByCondition)));
     }
@@ -278,31 +276,5 @@ public abstract class AbstractJooqRepository<T, ID> {
     @SuppressWarnings("unchecked")
     protected <S> RelationalPersistentEntity<S> getRequiredPersistentEntity(final Class<S> domainType) {
         return (RelationalPersistentEntity<S>) this.context.getRequiredPersistentEntity(domainType);
-    }
-
-    @Nullable
-    protected Object getProperty(final PersistentProperty<?> property, final Object bean) {
-
-        Assert.notNull(property, "PersistentProperty must not be null!");
-
-        try {
-
-            if (!property.usePropertyAccess()) {
-
-                final java.lang.reflect.Field field = property.getRequiredField();
-
-                ReflectionUtils.makeAccessible(field);
-                return ReflectionUtils.getField(field, bean);
-            }
-
-            final Method getter = property.getRequiredGetter();
-
-            ReflectionUtils.makeAccessible(getter);
-            return ReflectionUtils.invokeMethod(getter, bean);
-        }
-        catch (final IllegalStateException e) {
-            throw new MappingException(
-                    String.format("Could not read property %s of %s!", property.toString(), bean.toString()), e);
-        }
     }
 }
