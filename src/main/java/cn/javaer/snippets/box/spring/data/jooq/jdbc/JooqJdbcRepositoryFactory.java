@@ -73,7 +73,7 @@ public class JooqJdbcRepositoryFactory extends RepositoryFactorySupport {
         this.auditorAware = auditorAware;
         try {
             //noinspection unchecked
-            this.constructor = (Constructor<? extends QueryLookupStrategy>) Class.forName("org.springframework.data.jdbc.repository.support.JdbcQueryLookupStrategy.JdbcQueryLookupStrategy")
+            this.constructor = (Constructor<? extends QueryLookupStrategy>) Class.forName("org.springframework.data.jdbc.repository.support.JdbcQueryLookupStrategy")
                     .getDeclaredConstructor(ApplicationEventPublisher.class,
                             EntityCallbacks.class,
                             RelationalMappingContext.class,
