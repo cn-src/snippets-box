@@ -1,0 +1,127 @@
+package cn.javaer.snippets.box.spring.web;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.util.ContentCachingRequestWrapper;
+import org.springframework.web.util.ContentCachingResponseWrapper;
+import org.springframework.web.util.WebUtils;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+import java.util.Enumeration;
+
+/**
+ * 记录请求和响应详情的日志，一般用于调试场景，请使用 spring profile 机制启用.
+ *
+ * @author cn-src
+ * @see org.springframework.web.filter.AbstractRequestLoggingFilter
+ */
+public class RequestResponseLoggingFilter extends OncePerRequestFilter {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    private final ObjectMapper objectMapper;
+
+    public RequestResponseLoggingFilter() {
+        this.objectMapper = new ObjectMapper();
+        this.objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+    }
+
+    public RequestResponseLoggingFilter(final ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
+
+    @Override
+    protected void doFilterInternal(
+            final HttpServletRequest request,
+            final HttpServletResponse response,
+            final FilterChain filterChain)
+            throws ServletException, IOException {
+
+        final boolean isFirstRequest = !this.isAsyncDispatch(request);
+        HttpServletRequest requestToUse = request;
+
+        if (isFirstRequest && !(request instanceof ContentCachingRequestWrapper)) {
+            requestToUse = new ContentCachingRequestWrapper(request, 2000);
+        }
+
+        HttpServletResponse responseToUse = response;
+        if (!(response instanceof ContentCachingResponseWrapper)) {
+            responseToUse = new ContentCachingResponseWrapper(response);
+        }
+        try {
+            filterChain.doFilter(requestToUse, responseToUse);
+        }
+        finally {
+            if (isFirstRequest) {
+                this.beforeRequest(requestToUse);
+            }
+            if (!this.isAsyncStarted(requestToUse)) {
+                this.afterResponse(responseToUse);
+            }
+        }
+    }
+
+    protected void beforeRequest(final HttpServletRequest request) throws IOException {
+        // path
+        final StringBuilder msg = new StringBuilder();
+        msg.append("Request\n");
+        msg.append(request.getMethod().toUpperCase()).append(' ');
+        msg.append(request.getRequestURI());
+
+        final String queryString = request.getQueryString();
+        if (queryString != null) {
+            msg.append('?').append(queryString);
+        }
+        msg.append('\n');
+
+        // header
+        final Enumeration<String> names = request.getHeaderNames();
+        while (names.hasMoreElements()) {
+            final String header = names.nextElement();
+            msg.append(header).append(':').append(' ').append(request.getHeader(header)).append('\n');
+        }
+
+        // body
+        final ContentCachingRequestWrapper wrapper =
+                WebUtils.getNativeRequest(request, ContentCachingRequestWrapper.class);
+        if (wrapper != null) {
+            final byte[] buf = wrapper.getContentAsByteArray();
+            if (buf.length > 0) {
+                try {
+                    msg.append(new String(buf, wrapper.getCharacterEncoding()));
+                }
+                catch (final UnsupportedEncodingException ex) {
+                    msg.append("[unknown]");
+                }
+            }
+        }
+
+        this.logger.debug(msg.toString());
+    }
+
+    protected void afterResponse(final HttpServletResponse response) throws IOException {
+        final ContentCachingResponseWrapper wrapper = WebUtils.getNativeResponse(response, ContentCachingResponseWrapper.class);
+        if (null != wrapper) {
+            final byte[] data = wrapper.getContentAsByteArray();
+            if (data.length > 0) {
+                wrapper.copyBodyToResponse();
+                this.logger.debug("Response\n" + this.jsonFormat(new String(data, StandardCharsets.UTF_8)));
+            }
+        }
+    }
+
+    private String jsonFormat(final String jsonStr) throws JsonProcessingException {
+        final Object json = this.objectMapper.readValue(jsonStr, Object.class);
+        return this.objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(json);
+    }
+}
