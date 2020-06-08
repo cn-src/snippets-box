@@ -20,7 +20,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 
 /**
- * 记录请求和响应详情的日志，一般用于调试场景，请使用 spring profile 机制启用.
+ * 记录请求和响应详情的日志，一般用于调试场景，请使用 spring profile 机制启用，
+ * 并确保当前类日志级别为 debug 级别.
  *
  * @author cn-src
  * @see org.springframework.web.filter.AbstractRequestLoggingFilter
