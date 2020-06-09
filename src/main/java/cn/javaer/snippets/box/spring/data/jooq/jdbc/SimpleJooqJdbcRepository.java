@@ -373,11 +373,17 @@ public class SimpleJooqJdbcRepository<T, ID> extends AbstractJooqRepository<T, I
     }
 
     @Override
-    public Iterable<T> findAllByCreator(final Pageable pageable) {
+    public Page<T> findAllByCreator(final Pageable pageable) {
+        final long count = this.count();
+        if (count == 0) {
+            return new PageImpl<>(Collections.emptyList());
+        }
         final Query query = this.findAllByCreatorStep(pageable);
 
-        return this.jdbcOperations.query(query.getSQL(), query.getBindValues().toArray(),
+        List<T> list = this.jdbcOperations.query(query.getSQL(), query.getBindValues().toArray(),
                 this.repositoryEntityRowMapper);
+        
+        return new PageImpl<>(list, pageable, count);
     }
 
     @Transactional
