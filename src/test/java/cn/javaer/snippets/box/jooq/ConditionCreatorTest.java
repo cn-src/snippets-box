@@ -31,4 +31,10 @@ class ConditionCreatorTest {
         assertThat(this.dsl.render(condition))
                 .isEqualTo("((jsonb2::jsonb @> cast(? as jsonb)::jsonb) and cast(str2 as varchar) like ('%' || replace(replace(replace(?, '!', '!!'), '%', '!%'), '_', '!_') || '%') escape '!')");
     }
+
+    @Test
+    void conditionBetween() {
+        final Condition condition = ConditionCreator.create(new Query3(1, 4));
+        assertThat(this.dsl.render(condition)).isEqualTo("col_num between ? and ?");
+    }
 }

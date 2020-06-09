@@ -97,6 +97,10 @@ public class ConditionCreator {
         catch (final IllegalAccessException | InvocationTargetException e) {
             throw new IllegalStateException(e);
         }
+        for (final Map.Entry<String, BetweenValue> entry : betweenValueMap.entrySet()) {
+            final BetweenValue value = entry.getValue();
+            conditions.add(DSL.field(underline(entry.getKey())).between(value.getMin(), value.getMax()));
+        }
 
         if (conditions.isEmpty()) {
             return null;
@@ -105,10 +109,7 @@ public class ConditionCreator {
         for (int i = 1, size = conditions.size(); i < size; i++) {
             condition = condition.and(conditions.get(i));
         }
-        for (final Map.Entry<String, BetweenValue> entry : betweenValueMap.entrySet()) {
-            final BetweenValue value = entry.getValue();
-            condition = condition.and(DSL.field(underline(entry.getKey())).between(value.getMin(), value.getMax()));
-        }
+
         return condition;
     }
 
