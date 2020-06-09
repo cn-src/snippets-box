@@ -222,6 +222,17 @@ public abstract class AbstractJooqRepository<T, ID> {
                 .where(DSL.field(createColumnName).eq(this.auditorAware.getCurrentAuditor().get()));
     }
 
+    protected Query findAllByCreatorStep(final Pageable pageable) {
+        Assert.isTrue(this.auditorAware.getCurrentAuditor().isPresent(), AUDITOR_MUST_BE_NOT_NULL);
+        final String createColumnName = Objects.requireNonNull(this.repositoryEntity.getPersistentProperty(CreatedBy.class))
+                .getColumnName().getReference();
+
+        final SelectConditionStep<Record> step = this.dsl.selectFrom(this.repositoryTable)
+                .where(DSL.field(createColumnName).eq(this.auditorAware.getCurrentAuditor().get()));
+        this.pageableStep(step, pageable);
+        return step;
+    }
+
     protected UpdateConditionStep<Record> updateByIdAndCreatorStep(final T instance) {
         Assert.isTrue(this.auditorAware.getCurrentAuditor().isPresent(), AUDITOR_MUST_BE_NOT_NULL);
 

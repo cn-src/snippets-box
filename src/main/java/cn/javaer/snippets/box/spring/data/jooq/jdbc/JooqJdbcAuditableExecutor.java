@@ -1,5 +1,7 @@
 package cn.javaer.snippets.box.spring.data.jooq.jdbc;
 
+import org.springframework.data.domain.Pageable;
+
 import java.util.Optional;
 
 /**
@@ -24,6 +26,15 @@ public interface JooqJdbcAuditableExecutor<T, ID> {
      * @return Iterable<T>
      */
     Iterable<T> findAllByCreator();
+
+    /**
+     * 创建者为当前用户查找。
+     *
+     * @param pageable 分页和排序参数
+     *
+     * @return Iterable<T>
+     */
+    Iterable<T> findAllByCreator(Pageable pageable);
 
     /**
      * 更新实体，根据实体 ID 和 创建者为当前用户。

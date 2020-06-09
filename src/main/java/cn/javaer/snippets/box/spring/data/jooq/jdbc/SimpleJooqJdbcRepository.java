@@ -372,6 +372,14 @@ public class SimpleJooqJdbcRepository<T, ID> extends AbstractJooqRepository<T, I
                 this.repositoryEntityRowMapper);
     }
 
+    @Override
+    public Iterable<T> findAllByCreator(final Pageable pageable) {
+        final Query query = this.findAllByCreatorStep(pageable);
+
+        return this.jdbcOperations.query(query.getSQL(), query.getBindValues().toArray(),
+                this.repositoryEntityRowMapper);
+    }
+
     @Transactional
     @Override
     public T updateByIdAndCreator(final T instance) {
