@@ -13,6 +13,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author cn-src
  */
 class ConditionCreatorTest {
+    static {
+        System.getProperties().setProperty("org.jooq.no-logo", "true");
+    }
+
     DSLContext dsl = DSL.using(SQLDialect.POSTGRES);
 
     @Test
