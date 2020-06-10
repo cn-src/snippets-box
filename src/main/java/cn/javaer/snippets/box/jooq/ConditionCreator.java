@@ -1,20 +1,29 @@
 package cn.javaer.snippets.box.jooq;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.jooq.Condition;
 import org.jooq.Field;
 import org.jooq.JSONB;
 import org.jooq.impl.DSL;
 import org.springframework.beans.BeanUtils;
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 
 import java.beans.PropertyDescriptor;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Stream;
 
 /**
  * Condition 条件创建器，根据 POJO 来动态创建条件.
@@ -22,6 +31,7 @@ import java.util.Map;
  * @author cn-src
  */
 public class ConditionCreator {
+    private static final ConcurrentHashMap<Class<?>, List<ClassInfo>> cache = new ConcurrentHashMap<>();
 
     public static Condition create(final Object query) {
         return ConditionCreator.create(query, false);
@@ -31,6 +41,7 @@ public class ConditionCreator {
         return ConditionCreator.create(query, true);
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private static Condition create(final Object query, final boolean ignoreUnannotated) {
         if (query == null) {
             return null;
@@ -38,58 +49,54 @@ public class ConditionCreator {
 
         final List<Condition> conditions = new ArrayList<>();
         final Class<?> clazz = query.getClass();
-        final PropertyDescriptor[] descriptors = BeanUtils.getPropertyDescriptors(clazz);
+        final List<ClassInfo> classInfos = cache.computeIfAbsent(clazz, ConditionCreator::createClassCache);
         final Map<String, BetweenValue> betweenValueMap = new HashMap<>();
         try {
-            for (final PropertyDescriptor dr : descriptors) {
-                final String name = dr.getName();
-                final java.lang.reflect.Field field = ReflectionUtils.findField(clazz, name);
-                if ("class".equals(name) || field == null || field.getAnnotation(ConditionIgnore.class) != null) {
-                    continue;
-                }
-                final Object value = dr.getReadMethod().invoke(query);
+            for (final ClassInfo info : classInfos) {
+                final Object value = info.readMethod.invoke(query);
                 if (ObjectUtils.isEmpty(value)) {
                     continue;
                 }
-                //noinspection rawtypes
-                final Field jooqField = DSL.field(underline(name));
-                if (field.getAnnotation(ConditionContains.class) != null) {
-                    if (dr.getPropertyType().equals(JSONB.class)) {
-                        @SuppressWarnings("rawtypes") final Field jsonField = jooqField;
-                        //noinspection unchecked
-                        conditions.add(Sql.jsonbContains(jsonField, (JSONB) value));
+                final Annotation ann = info.annotation;
+                final Field column = info.column;
+                if (ann == null) {
+                    if (!ignoreUnannotated) {
+                        conditions.add(column.eq(value));
                     }
-                    else {
-                        //noinspection unchecked
-                        conditions.add(jooqField.contains(value));
-                    }
-                }
-                else if (field.getAnnotation(ConditionContained.class) != null && dr.getPropertyType().equals(String[].class)) {
-                    //noinspection unchecked
-                    conditions.add(Sql.arrayContained(jooqField, (String[]) value));
-                }
-                else if (field.getAnnotation(ConditionBetweenMin.class) != null) {
-                    final ConditionBetweenMin betweenMin = field.getAnnotation(ConditionBetweenMin.class);
-                    BetweenValue betweenValue = betweenValueMap.get(betweenMin.value());
-                    if (null == betweenValue) {
-                        betweenValue = new BetweenValue();
-                        betweenValueMap.put(betweenMin.value(), betweenValue);
-                    }
-                    betweenValue.setMin(value);
-                }
-                else if (field.getAnnotation(ConditionBetweenMax.class) != null) {
-                    final ConditionBetweenMax betweenMax = field.getAnnotation(ConditionBetweenMax.class);
-                    BetweenValue betweenValue = betweenValueMap.get(betweenMax.value());
-                    if (null == betweenValue) {
-                        betweenValue = new BetweenValue();
-                        betweenValueMap.put(betweenMax.value(), betweenValue);
-                    }
-                    betweenValue.setMax(value);
                 }
                 else {
-                    if (!ignoreUnannotated) {
-                        //noinspection unchecked
-                        conditions.add(jooqField.eq(value));
+                    if (ann instanceof ConditionEqual) {
+                        conditions.add(column.eq(value));
+                    }
+                    else if (ann instanceof ConditionContains) {
+                        if (JSONB.class.equals(info.readMethod.getReturnType())) {
+                            conditions.add(Sql.jsonbContains(column, (JSONB) value));
+                        }
+                        else {
+                            conditions.add(column.contains(value));
+                        }
+                    }
+                    else if (ann instanceof ConditionContained
+                            && String[].class.equals(info.readMethod.getReturnType())) {
+                        conditions.add(Sql.arrayContained(column, (String[]) value));
+                    }
+                    else if (ann instanceof ConditionBetweenMin) {
+                        final String annValue = ((ConditionBetweenMin) ann).value();
+                        BetweenValue betweenValue = betweenValueMap.get(annValue);
+                        if (null == betweenValue) {
+                            betweenValue = new BetweenValue();
+                            betweenValueMap.put(annValue, betweenValue);
+                        }
+                        betweenValue.setMin(value);
+                    }
+                    else if (ann instanceof ConditionBetweenMax) {
+                        final String annValue = ((ConditionBetweenMax) ann).value();
+                        BetweenValue betweenValue = betweenValueMap.get(annValue);
+                        if (null == betweenValue) {
+                            betweenValue = new BetweenValue();
+                            betweenValueMap.put(annValue, betweenValue);
+                        }
+                        betweenValue.setMax(value);
                     }
                 }
             }
@@ -97,6 +104,7 @@ public class ConditionCreator {
         catch (final IllegalAccessException | InvocationTargetException e) {
             throw new IllegalStateException(e);
         }
+
         for (final Map.Entry<String, BetweenValue> entry : betweenValueMap.entrySet()) {
             final BetweenValue value = entry.getValue();
             conditions.add(DSL.field(underline(entry.getKey())).between(value.getMin(), value.getMax()));
@@ -111,6 +119,29 @@ public class ConditionCreator {
         }
 
         return condition;
+    }
+
+    private static List<ClassInfo> createClassCache(final Class<?> clazz) {
+        final PropertyDescriptor[] descriptors = BeanUtils.getPropertyDescriptors(clazz);
+        final List<ClassInfo> tuples = new ArrayList<>(descriptors.length);
+        for (final PropertyDescriptor dr : descriptors) {
+            final String name = dr.getName();
+            final java.lang.reflect.Field field = ReflectionUtils.findField(clazz, name);
+            if ("class".equals(name) || field == null || field.getAnnotation(ConditionIgnore.class) != null) {
+                continue;
+            }
+            final ConditionContains conditionContains = field.getAnnotation(ConditionContains.class);
+            final ConditionContained conditionContained = field.getAnnotation(ConditionContained.class);
+            final ConditionBetweenMin conditionBetweenMin = field.getAnnotation(ConditionBetweenMin.class);
+            final ConditionBetweenMax conditionBetweenMax = field.getAnnotation(ConditionBetweenMax.class);
+            final ConditionEqual conditionEqual = field.getAnnotation(ConditionEqual.class);
+            final Stream<Annotation> annStream = Stream.of(conditionContains, conditionContained,
+                    conditionBetweenMin, conditionBetweenMax, conditionEqual)
+                    .filter(Objects::nonNull);
+            Assert.state(annStream.count() < 2, () -> "Condition annotation has multi");
+            tuples.add(new ClassInfo(annStream.findFirst().orElse(null), dr.getReadMethod(), DSL.field(underline(name))));
+        }
+        return tuples;
     }
 
     private static String underline(final String str) {
@@ -128,8 +159,21 @@ public class ConditionCreator {
     }
 
     @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
     static class BetweenValue {
         Object min;
         Object max;
+    }
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    static class ClassInfo {
+        @Nullable
+        private Annotation annotation;
+        private Method readMethod;
+        @SuppressWarnings("rawtypes")
+        private Field column;
     }
 }
