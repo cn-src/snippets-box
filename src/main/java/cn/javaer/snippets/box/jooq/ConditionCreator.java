@@ -52,7 +52,7 @@ public class ConditionCreator {
                     continue;
                 }
                 //noinspection rawtypes
-                final Field jooqField = DSL.field(name);
+                final Field jooqField = DSL.field(underline(name));
                 if (field.getAnnotation(ConditionContains.class) != null) {
                     if (dr.getPropertyType().equals(JSONB.class)) {
                         @SuppressWarnings("rawtypes") final Field jsonField = jooqField;
