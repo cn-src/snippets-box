@@ -123,7 +123,7 @@ public class ConditionCreator {
 
     private static List<ClassInfo> createClassCache(final Class<?> clazz) {
         final PropertyDescriptor[] descriptors = BeanUtils.getPropertyDescriptors(clazz);
-        final List<ClassInfo> tuples = new ArrayList<>(descriptors.length);
+        final List<ClassInfo> classInfos = new ArrayList<>(descriptors.length);
         for (final PropertyDescriptor dr : descriptors) {
             final String name = dr.getName();
             final java.lang.reflect.Field field = ReflectionUtils.findField(clazz, name);
@@ -140,9 +140,9 @@ public class ConditionCreator {
                     .filter(Objects::nonNull)
                     .toArray(Annotation[]::new);
             Assert.state(annotations.length < 2, () -> "Condition annotation has multi");
-            tuples.add(new ClassInfo(annotations.length == 1 ? annotations[0] : null, dr.getReadMethod(), DSL.field(underline(name))));
+            classInfos.add(new ClassInfo(annotations.length == 1 ? annotations[0] : null, dr.getReadMethod(), DSL.field(underline(name))));
         }
-        return tuples;
+        return classInfos;
     }
 
     private static String underline(final String str) {
