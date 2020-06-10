@@ -135,11 +135,12 @@ public class ConditionCreator {
             final ConditionBetweenMin conditionBetweenMin = field.getAnnotation(ConditionBetweenMin.class);
             final ConditionBetweenMax conditionBetweenMax = field.getAnnotation(ConditionBetweenMax.class);
             final ConditionEqual conditionEqual = field.getAnnotation(ConditionEqual.class);
-            final Stream<Annotation> annStream = Stream.of(conditionContains, conditionContained,
+            final Annotation[] annotations = Stream.of(conditionContains, conditionContained,
                     conditionBetweenMin, conditionBetweenMax, conditionEqual)
-                    .filter(Objects::nonNull);
-            Assert.state(annStream.count() < 2, () -> "Condition annotation has multi");
-            tuples.add(new ClassInfo(annStream.findFirst().orElse(null), dr.getReadMethod(), DSL.field(underline(name))));
+                    .filter(Objects::nonNull)
+                    .toArray(Annotation[]::new);
+            Assert.state(annotations.length < 2, () -> "Condition annotation has multi");
+            tuples.add(new ClassInfo(annotations.length == 1 ? annotations[0] : null, dr.getReadMethod(), DSL.field(underline(name))));
         }
         return tuples;
     }
