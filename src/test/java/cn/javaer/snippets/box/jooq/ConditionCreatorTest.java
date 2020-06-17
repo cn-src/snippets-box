@@ -7,6 +7,8 @@ import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -40,5 +42,11 @@ class ConditionCreatorTest {
     void conditionBetween() {
         final Condition condition = ConditionCreator.create(new Query3(1, 4));
         assertThat(this.dsl.render(condition)).isEqualTo("col_num between ? and ?");
+    }
+
+    @Test
+    void conditionDateBetween() {
+        final Condition condition = ConditionCreator.create(new Query4(LocalDate.of(2020, 1, 11), LocalDate.of(2020, 4, 11)));
+        assertThat(this.dsl.render(condition)).isEqualTo("col_name between cast(? as timestamp) and cast(? as timestamp)");
     }
 }

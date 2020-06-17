@@ -17,7 +17,7 @@ public @interface ConditionBetweenMax {
      *
      * @return Between 的表列名
      */
-    String value();
+    String value() default "";
 
     /**
      * @see #value()
