@@ -14,7 +14,7 @@ import java.util.Objects;
 public class PageableDoc {
 
     @Min(1)
-    @Parameter(name = "_page", description = "分页-页码", schema = @Schema(type = "integer", defaultValue = "0"))
+    @Parameter(name = "_page", description = "分页-页码", schema = @Schema(type = "integer", defaultValue = "1"))
     private Integer page;
 
     @Min(1)
