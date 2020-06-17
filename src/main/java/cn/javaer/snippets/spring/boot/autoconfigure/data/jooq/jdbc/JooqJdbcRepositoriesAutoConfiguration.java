@@ -29,6 +29,9 @@ import org.springframework.transaction.PlatformTransactionManager;
         matchIfMissing = true)
 @AutoConfigureAfter({JdbcTemplateAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class})
 public class JooqJdbcRepositoriesAutoConfiguration {
+    static {
+        System.getProperties().setProperty("org.jooq.no-logo", "true");
+    }
 
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnMissingBean(JooqJdbcRepositoryConfigExtension.class)
