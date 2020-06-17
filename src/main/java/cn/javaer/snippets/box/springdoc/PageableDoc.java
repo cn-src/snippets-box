@@ -11,7 +11,7 @@ import java.util.Objects;
 /**
  * @author cn-src
  */
-public class Pageable {
+public class PageableDoc {
 
     @Min(1)
     @Parameter(name = "_page", description = "分页-页码", schema = @Schema(type = "integer", defaultValue = "0"))
@@ -25,7 +25,7 @@ public class Pageable {
             , array = @ArraySchema(schema = @Schema(type = "string")))
     private List<String> sort;
 
-    public Pageable(final int page, final int size, final List<String> sort) {
+    public PageableDoc(final int page, final int size, final List<String> sort) {
         this.page = page;
         this.size = size;
         this.sort = sort;
@@ -72,10 +72,10 @@ public class Pageable {
         if (o == null || this.getClass() != o.getClass()) {
             return false;
         }
-        final Pageable pageable = (Pageable) o;
-        return Objects.equals(this.page, pageable.page) &&
-                Objects.equals(this.size, pageable.size) &&
-                Objects.equals(this.sort, pageable.sort);
+        final PageableDoc pageableDoc = (PageableDoc) o;
+        return Objects.equals(this.page, pageableDoc.page) &&
+                Objects.equals(this.size, pageableDoc.size) &&
+                Objects.equals(this.sort, pageableDoc.sort);
     }
 
     @Override
