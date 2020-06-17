@@ -17,6 +17,8 @@ import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -81,22 +83,36 @@ public class ConditionCreator {
                         conditions.add(Sql.arrayContained(column, (String[]) value));
                     }
                     else if (ann instanceof ConditionBetweenMin) {
-                        final String annValue = ((ConditionBetweenMin) ann).value();
-                        BetweenValue betweenValue = betweenValueMap.get(annValue);
+                        final ConditionBetweenMin betweenMin = (ConditionBetweenMin) ann;
+                        final String betweenColumn = betweenMin.value().isEmpty() ? betweenMin.column() : betweenMin.value();
+                        Assert.hasText(betweenColumn, () -> "Column must be not empty");
+                        BetweenValue betweenValue = betweenValueMap.get(betweenColumn);
                         if (null == betweenValue) {
                             betweenValue = new BetweenValue();
-                            betweenValueMap.put(annValue, betweenValue);
+                            betweenValueMap.put(betweenColumn, betweenValue);
                         }
-                        betweenValue.setMin(value);
+                        if (betweenMin.dateToDateTime() && LocalDate.class.equals(info.readMethod.getReturnType())) {
+                            betweenValue.setMin(((LocalDate) value).atTime(LocalTime.MIN));
+                        }
+                        else {
+                            betweenValue.setMin(value);
+                        }
                     }
                     else if (ann instanceof ConditionBetweenMax) {
-                        final String annValue = ((ConditionBetweenMax) ann).value();
-                        BetweenValue betweenValue = betweenValueMap.get(annValue);
+                        final ConditionBetweenMax betweenMax = (ConditionBetweenMax) ann;
+                        final String betweenColumn = betweenMax.value().isEmpty() ? betweenMax.column() : betweenMax.value();
+                        Assert.hasText(betweenColumn, () -> "Column must be not empty");
+                        BetweenValue betweenValue = betweenValueMap.get(betweenColumn);
                         if (null == betweenValue) {
                             betweenValue = new BetweenValue();
-                            betweenValueMap.put(annValue, betweenValue);
+                            betweenValueMap.put(betweenColumn, betweenValue);
                         }
-                        betweenValue.setMax(value);
+                        if (betweenMax.dateToDateTime() && LocalDate.class.equals(info.readMethod.getReturnType())) {
+                            betweenValue.setMax(((LocalDate) value).atTime(LocalTime.MAX));
+                        }
+                        else {
+                            betweenValue.setMax(value);
+                        }
                     }
                 }
             }

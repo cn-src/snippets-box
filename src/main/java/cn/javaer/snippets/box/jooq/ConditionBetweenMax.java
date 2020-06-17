@@ -18,4 +18,16 @@ public @interface ConditionBetweenMax {
      * @return Between 的表列名
      */
     String value();
+
+    /**
+     * @see #value()
+     */
+    String column() default "";
+
+    /**
+     * 如果是日期类型，则将 LocalDate 转成 LocalDateTime
+     *
+     * @return true 则进行转换
+     */
+    boolean dateToDateTime() default false;
 }
