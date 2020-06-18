@@ -82,6 +82,18 @@ public class ConditionCreator {
                             && String[].class.equals(info.readMethod.getReturnType())) {
                         conditions.add(Sql.arrayContained(column, (String[]) value));
                     }
+                    else if (ann instanceof ConditionLessThan) {
+                        conditions.add(column.lessThan(value));
+                    }
+                    else if (ann instanceof ConditionGreaterThan) {
+                        conditions.add(column.greaterThan(value));
+                    }
+                    if (ann instanceof ConditionLessOrEqual) {
+                        conditions.add(column.lessOrEqual(value));
+                    }
+                    else if (ann instanceof ConditionGreaterOrEqual) {
+                        conditions.add(column.greaterOrEqual(value));
+                    }
                     else if (ann instanceof ConditionBetweenMin) {
                         final ConditionBetweenMin betweenMin = (ConditionBetweenMin) ann;
                         final String betweenColumn = betweenMin.value().isEmpty() ? betweenMin.column() : betweenMin.value();
