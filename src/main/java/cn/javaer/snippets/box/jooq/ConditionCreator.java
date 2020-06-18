@@ -8,6 +8,7 @@ import org.jooq.Field;
 import org.jooq.JSONB;
 import org.jooq.impl.DSL;
 import org.springframework.beans.BeanUtils;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
@@ -23,9 +24,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Stream;
+import java.util.function.BiFunction;
 
 /**
  * Condition 条件创建器，根据 POJO 来动态创建条件.
@@ -34,6 +34,20 @@ import java.util.stream.Stream;
  */
 public class ConditionCreator {
     private static final ConcurrentHashMap<Class<?>, List<ClassInfo>> cache = new ConcurrentHashMap<>();
+    private static final Map<Class<? extends Annotation>, BiFunction<Field, Object, Condition>> conditionFunMap = new HashMap<>();
+
+    static {
+        //noinspection unchecked
+        conditionFunMap.put(ConditionEqual.class, Field::eq);
+        //noinspection unchecked
+        conditionFunMap.put(ConditionLessThan.class, Field::lessThan);
+        //noinspection unchecked
+        conditionFunMap.put(ConditionLessOrEqual.class, Field::lessOrEqual);
+        //noinspection unchecked
+        conditionFunMap.put(ConditionGreaterThan.class, Field::greaterThan);
+        //noinspection unchecked
+        conditionFunMap.put(ConditionGreaterOrEqual.class, Field::greaterOrEqual);
+    }
 
     public static Condition create(final Object query) {
         return ConditionCreator.create(query, false);
@@ -67,8 +81,9 @@ public class ConditionCreator {
                     }
                 }
                 else {
-                    if (ann instanceof ConditionEqual) {
-                        conditions.add(column.eq(value));
+
+                    if (info.conditionFun != null) {
+                        conditions.add(info.conditionFun.apply(column, value));
                     }
                     else if (ann instanceof ConditionContains) {
                         if (JSONB.class.equals(info.readMethod.getReturnType())) {
@@ -81,18 +96,6 @@ public class ConditionCreator {
                     else if (ann instanceof ConditionContained
                             && String[].class.equals(info.readMethod.getReturnType())) {
                         conditions.add(Sql.arrayContained(column, (String[]) value));
-                    }
-                    else if (ann instanceof ConditionLessThan) {
-                        conditions.add(column.lessThan(value));
-                    }
-                    else if (ann instanceof ConditionGreaterThan) {
-                        conditions.add(column.greaterThan(value));
-                    }
-                    if (ann instanceof ConditionLessOrEqual) {
-                        conditions.add(column.lessOrEqual(value));
-                    }
-                    else if (ann instanceof ConditionGreaterOrEqual) {
-                        conditions.add(column.greaterOrEqual(value));
                     }
                     else if (ann instanceof ConditionBetweenMin) {
                         final ConditionBetweenMin betweenMin = (ConditionBetweenMin) ann;
@@ -158,17 +161,24 @@ public class ConditionCreator {
             if ("class".equals(name) || field == null || field.getAnnotation(ConditionIgnore.class) != null) {
                 continue;
             }
-            final ConditionContains conditionContains = field.getAnnotation(ConditionContains.class);
-            final ConditionContained conditionContained = field.getAnnotation(ConditionContained.class);
-            final ConditionBetweenMin conditionBetweenMin = field.getAnnotation(ConditionBetweenMin.class);
-            final ConditionBetweenMax conditionBetweenMax = field.getAnnotation(ConditionBetweenMax.class);
-            final ConditionEqual conditionEqual = field.getAnnotation(ConditionEqual.class);
-            final Annotation[] annotations = Stream.of(conditionContains, conditionContained,
-                    conditionBetweenMin, conditionBetweenMax, conditionEqual)
-                    .filter(Objects::nonNull)
-                    .toArray(Annotation[]::new);
-            Assert.state(annotations.length < 2, () -> "Condition annotation has multi");
-            classInfos.add(new ClassInfo(annotations.length == 1 ? annotations[0] : null, dr.getReadMethod(), DSL.field(underline(name))));
+            final Annotation[] fieldAnnotations = field.getAnnotations();
+            Annotation conditionAnnotation = null;
+            if (fieldAnnotations != null) {
+                for (final Annotation fieldAnnotation : fieldAnnotations) {
+                    if (!AnnotatedElementUtils.isAnnotated(fieldAnnotation.annotationType(), cn.javaer.snippets.box.jooq.Condition.class)) {
+                        continue;
+                    }
+                    if (null != conditionAnnotation) {
+                        throw new IllegalStateException("Condition annotation has multi");
+                    }
+                    conditionAnnotation = fieldAnnotation;
+                }
+            }
+            final BiFunction<Field, Object, Condition> conditionFun = conditionAnnotation == null ?
+                    null : conditionFunMap.get(conditionAnnotation.annotationType());
+            classInfos.add(new ClassInfo(conditionAnnotation,
+                    dr.getReadMethod(), DSL.field(underline(name)),
+                    conditionFun));
         }
         return classInfos;
     }
@@ -204,5 +214,8 @@ public class ConditionCreator {
         private Method readMethod;
         @SuppressWarnings("rawtypes")
         private Field column;
+
+        @SuppressWarnings("rawtypes")
+        private BiFunction<Field, Object, Condition> conditionFun;
     }
 }

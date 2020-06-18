@@ -8,8 +8,7 @@ import java.lang.annotation.Target;
 /**
  * @author cn-src
  */
-@Target(ElementType.FIELD)
+@Target(ElementType.ANNOTATION_TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Condition
-public @interface ConditionLessThan {
+public @interface Condition {
 }

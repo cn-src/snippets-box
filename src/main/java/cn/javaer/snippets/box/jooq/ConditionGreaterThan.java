@@ -10,5 +10,6 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
+@Condition
 public @interface ConditionGreaterThan {
 }
