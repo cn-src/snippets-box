@@ -1,5 +1,7 @@
 package cn.javaer.snippets.box.jooq;
 
+import cn.javaer.snippets.box.jooq.condition.annotation.ConditionBetweenMax;
+import cn.javaer.snippets.box.jooq.condition.annotation.ConditionBetweenMin;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

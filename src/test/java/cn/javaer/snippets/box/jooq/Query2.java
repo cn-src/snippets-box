@@ -1,5 +1,6 @@
 package cn.javaer.snippets.box.jooq;
 
+import cn.javaer.snippets.box.jooq.condition.annotation.ConditionContains;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

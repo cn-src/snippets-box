@@ -1,5 +1,6 @@
 package cn.javaer.snippets.box.jooq;
 
+import cn.javaer.snippets.box.jooq.condition.ConditionBuilder;
 import org.jooq.Condition;
 import org.jooq.Field;
 import org.jooq.JSONB;

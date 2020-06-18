@@ -1,4 +1,4 @@
-package cn.javaer.snippets.box.jooq;
+package cn.javaer.snippets.box.jooq.condition.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -6,12 +6,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 被包含.
- *
  * @author cn-src
  */
-@Target(ElementType.FIELD)
+@Target(ElementType.ANNOTATION_TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Condition
-public @interface ConditionContained {
+public @interface Condition {
 }

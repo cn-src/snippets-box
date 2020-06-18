@@ -1,4 +1,4 @@
-package cn.javaer.snippets.box.jooq;
+package cn.javaer.snippets.box.jooq.condition;
 
 import org.jooq.Condition;
 import org.springframework.lang.Nullable;
@@ -25,7 +25,7 @@ import java.util.function.Supplier;
 public class ConditionBuilder {
 
     private final List<Condition> conditions = new ArrayList<>();
-    
+
     @FunctionalInterface
     public interface Function3<T1, T2, T3>
             extends Serializable {

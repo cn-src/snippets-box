@@ -1,5 +1,16 @@
-package cn.javaer.snippets.box.jooq;
+package cn.javaer.snippets.box.jooq.condition;
 
+import cn.javaer.snippets.box.jooq.Sql;
+import cn.javaer.snippets.box.jooq.condition.annotation.ConditionBetweenMax;
+import cn.javaer.snippets.box.jooq.condition.annotation.ConditionBetweenMin;
+import cn.javaer.snippets.box.jooq.condition.annotation.ConditionContained;
+import cn.javaer.snippets.box.jooq.condition.annotation.ConditionContains;
+import cn.javaer.snippets.box.jooq.condition.annotation.ConditionEqual;
+import cn.javaer.snippets.box.jooq.condition.annotation.ConditionGreaterOrEqual;
+import cn.javaer.snippets.box.jooq.condition.annotation.ConditionGreaterThan;
+import cn.javaer.snippets.box.jooq.condition.annotation.ConditionIgnore;
+import cn.javaer.snippets.box.jooq.condition.annotation.ConditionLessOrEqual;
+import cn.javaer.snippets.box.jooq.condition.annotation.ConditionLessThan;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -165,7 +176,7 @@ public class ConditionCreator {
             Annotation conditionAnnotation = null;
             if (fieldAnnotations != null) {
                 for (final Annotation fieldAnnotation : fieldAnnotations) {
-                    if (!AnnotatedElementUtils.isAnnotated(fieldAnnotation.annotationType(), cn.javaer.snippets.box.jooq.Condition.class)) {
+                    if (!AnnotatedElementUtils.isAnnotated(fieldAnnotation.annotationType(), cn.javaer.snippets.box.jooq.condition.annotation.Condition.class)) {
                         continue;
                     }
                     if (null != conditionAnnotation) {

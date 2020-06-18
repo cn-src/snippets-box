@@ -1,4 +1,4 @@
-package cn.javaer.snippets.box.jooq;
+package cn.javaer.snippets.box.jooq.condition.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
