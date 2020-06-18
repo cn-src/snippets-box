@@ -1,7 +1,6 @@
 # Auto Configure
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 cn.javaer.snippets.spring.boot.autoconfigure.simpleflatmapper.jooq.SfmJooqAutoConfiguration,\
-cn.javaer.snippets.spring.boot.autoconfigure.jooq.JooqRecordAutoConfiguration,\
 cn.javaer.snippets.spring.boot.autoconfigure.eclipse.collections.EclipseCollectionsAutoConfiguration,\
 cn.javaer.snippets.spring.boot.autoconfigure.data.jooq.jdbc.JooqJdbcRepositoriesAutoConfiguration,\
 cn.javaer.snippets.spring.boot.autoconfigure.jooq.JooqDSLContextAutoConfiguration
