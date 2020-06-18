@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * @author cn-src
@@ -71,5 +72,11 @@ class ConditionCreatorTest {
 
         final Condition condition = ConditionCreator.create(queryFull);
         assertThat(this.dsl.render(condition)).isEqualTo("((jsonb1::jsonb @> cast(? as jsonb)::jsonb) and num1 < ? and num2 <= ? and num3 > ? and num4 >= ? and str1 = ? and cast(str2 as varchar) like ('%' || replace(replace(replace(?, '!', '!!'), '%', '!%'), '_', '!_') || '%') escape '!' and str3 @> ?::varchar[] and (str4 <@ ?::varchar[]) and col_num between ? and ? and col_date between cast(? as timestamp) and cast(? as timestamp))");
+    }
+
+    @Test
+    void exceptionQuery() {
+        assertThatIllegalStateException()
+                .isThrownBy(() -> ConditionCreator.create(new ExceptionQuery("s1")));
     }
 }
