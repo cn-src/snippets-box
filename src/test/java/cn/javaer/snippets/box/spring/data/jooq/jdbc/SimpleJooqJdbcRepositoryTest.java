@@ -70,7 +70,7 @@ class SimpleJooqJdbcRepositoryTest {
     }
 
     @TestAutoConfigurationPackage(EmptyDataPackage.class)
-    @EnableJooqJdbcRepositories(basePackageClasses = User.class)
+    @EnableJooqJdbcRepositories(basePackageClasses = UserJdbcRepository.class)
     static class EnableRepositoriesConfiguration {
     }
 }

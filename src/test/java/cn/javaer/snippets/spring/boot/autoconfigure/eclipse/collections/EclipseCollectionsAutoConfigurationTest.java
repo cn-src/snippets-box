@@ -53,7 +53,7 @@ class EclipseCollectionsAutoConfigurationTest {
 
     @Configuration(proxyBeanMethods = false)
     @TestAutoConfigurationPackage(EmptyDataPackage.class)
-    @EnableJdbcRepositories(basePackageClasses = City.class)
+    @EnableJdbcRepositories(basePackageClasses = CityRepository.class)
     static class DataSourceConfiguration {
 
         @Bean
