@@ -25,19 +25,20 @@ public class DateFillDeserializer extends JsonDeserializer<LocalDateTime> implem
     private final DateFillFormat dateFillFormat;
     private final DateTimeFormatter formatter;
 
-    public DateFillDeserializer() {
+    protected DateFillDeserializer() {
         this.dateFillFormat = null;
         this.formatter = null;
     }
 
     public DateFillDeserializer(final DateFillFormat dateFillFormat) {
+        Objects.requireNonNull(dateFillFormat);
         this.dateFillFormat = dateFillFormat;
         this.formatter = DateTimeFormatter.ofPattern(dateFillFormat.pattern());
     }
 
     @Override
     public LocalDateTime deserialize(final JsonParser parser, final DeserializationContext ctxt) throws IOException, JsonProcessingException {
-        final LocalDate date = LocalDate.parse(parser.getText(), Objects.requireNonNull(this.formatter));
+        final LocalDate date = LocalDate.parse(parser.getText(), this.formatter);
         switch (this.dateFillFormat.fillTime()) {
             case MIN:
                 return date.atTime(LocalTime.MIN);
