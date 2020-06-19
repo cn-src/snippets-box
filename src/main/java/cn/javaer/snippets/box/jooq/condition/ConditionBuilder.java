@@ -67,11 +67,11 @@ public class ConditionBuilder {
     }
 
     public ConditionBuilder dateTime(final BiFunction<LocalDateTime, LocalDateTime, Condition> fun, final LocalDate start, final LocalDate end) {
-        if (null == start || null == end) {
+        if (null == start && null == end) {
             return this;
         }
-        final LocalDateTime startTime = start.atStartOfDay();
-        final LocalDateTime endTime = end.atTime(LocalTime.MAX);
+        final LocalDateTime startTime = Objects.requireNonNull(start).atTime(LocalTime.MIN);
+        final LocalDateTime endTime = Objects.requireNonNull(end).atTime(LocalTime.MAX);
         this.conditions.add(fun.apply(startTime, endTime));
         return this;
     }
