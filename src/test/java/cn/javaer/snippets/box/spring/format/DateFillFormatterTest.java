@@ -1,5 +1,6 @@
 package cn.javaer.snippets.box.spring.format;
 
+import lombok.Data;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -10,8 +11,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcAutoConfig
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,6 +26,7 @@ import java.time.LocalTime;
 
 import static cn.javaer.snippets.box.test.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -39,7 +43,13 @@ class DateFillFormatterTest {
         this.contextRunner.withUserConfiguration(TestController.class, WebConfig.class)
                 .run(context -> {
                     final MockMvc mockMvc = context.getBean(MockMvc.class);
-                    mockMvc.perform(get("/test?dateTime=2020-01-01")).andExpect(status().isOk());
+                    mockMvc.perform(get("/test1?dateTime=2020-01-01")).andExpect(status().isOk());
+
+                    mockMvc.perform(post("/test2")
+                            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                            .param("dateTime", "2020-01-01")
+                    )
+                            .andExpect(status().isOk());
                 });
     }
 
@@ -55,11 +65,22 @@ class DateFillFormatterTest {
     @RequestMapping
     static class TestController {
 
-        @GetMapping("test")
+        @GetMapping("test1")
         public String get(@DateFillFormat(fillTime = DateFillFormat.FillTime.MAX)
                           @RequestParam final LocalDateTime dateTime) {
             assertThat(dateTime).isEqualTo(LocalDate.parse("2020-01-01").atTime(LocalTime.MAX));
             return dateTime.toString();
         }
+
+        @PostMapping("test2")
+        public void post(final Demo demo) {
+            assertThat(demo.dateTime).isEqualTo(LocalDate.parse("2020-01-01").atTime(LocalTime.MIN));
+        }
+    }
+
+    @Data
+    static class Demo {
+        @DateFillFormat(fillTime = DateFillFormat.FillTime.MIN)
+        LocalDateTime dateTime;
     }
 }
