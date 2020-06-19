@@ -1,4 +1,4 @@
-package cn.javaer.snippets.box.spring.data.jooq.jdbc.user;
+package cn.javaer.snippets.box.spring.data.jooq.jdbc.pojo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

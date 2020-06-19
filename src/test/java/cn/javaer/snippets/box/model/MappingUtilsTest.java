@@ -1,6 +1,10 @@
 package cn.javaer.snippets.box.model;
 
+import cn.javaer.snippets.box.model.pojo.Product;
+import cn.javaer.snippets.box.model.pojo.Product2;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.util.Arrays;
 import java.util.List;
@@ -9,9 +13,10 @@ import java.util.List;
  * @author cn-src
  */
 class MappingUtilsTest {
+    ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
-    void toOneToManyMap() {
+    void toOneToManyMap() throws Exception {
         final List<Product> products = Arrays.asList(
                 new Product(1L, "n1", "c1-1", "c2-2", 2L),
                 new Product(1L, "n1", "c1-1", "c2-2", 2L),
@@ -19,23 +24,44 @@ class MappingUtilsTest {
                 new Product(2L, "n1", "c1-2", "c2-2", 2L),
                 new Product(3L, "n1", "c1-1", "c2-2", 2L)
         );
-        final List<Product2> r1 = MappingUtils.mergePropertyToMap(
+        final List<Product2> results = MappingUtils.mergePropertyToMap(
                 products,
                 Product::getId,
                 Product2::getId,
                 Product2::getDynamicData,
                 Product2::setDynamicData,
-                p -> String.format("%s-%s", p.category1, p.category2),
-                (p, old) -> p.count + (old == null ? 0 : old),
+                p -> String.format("%s-%s", p.getCategory1(), p.getCategory2()),
+                (p, old) -> p.getCount() + (old == null ? 0 : old),
                 p -> new Product2(p.getId(), p.getName())
 
         );
-
-        System.out.println(r1);
+        //language=JSON
+        JSONAssert.assertEquals("[\n" +
+                "  {\n" +
+                "    \"id\": 1,\n" +
+                "    \"name\": \"n1\",\n" +
+                "    \"dynamicData\": {\n" +
+                "      \"c1-1-c2-2\": 4\n" +
+                "    }\n" +
+                "  }, {\n" +
+                "  \"id\": 2,\n" +
+                "  \"name\": \"n1\",\n" +
+                "  \"dynamicData\": {\n" +
+                "    \"c1-1-c2-2\": 2,\n" +
+                "    \"c1-2-c2-2\": 2\n" +
+                "  }\n" +
+                "}, {\n" +
+                "  \"id\": 3,\n" +
+                "  \"name\": \"n1\",\n" +
+                "  \"dynamicData\": {\n" +
+                "    \"c1-1-c2-2\": 2\n" +
+                "  }\n" +
+                "}\n" +
+                "]", this.objectMapper.writeValueAsString(results), false);
     }
 
     @Test
-    void toOneToManyMap2() {
+    void toOneToManyMap2() throws Exception {
         final List<Product> products = Arrays.asList(
                 new Product(1L, "n1", "c1-1", "c2-2", 2L),
                 new Product(1L, "n1", "c1-1", "c2-2", 2L),
@@ -44,15 +70,46 @@ class MappingUtilsTest {
                 new Product(3L, "n1", "c1-1", "c2-2", 2L)
         );
 
-        final List<Product> r2 = MappingUtils.mergePropertyToMap(
+        final List<Product> results = MappingUtils.mergePropertyToMap(
                 products,
                 Product::getId,
                 Product::getDynamicData,
                 Product::setDynamicData,
-                p -> String.format("%s-%s", p.category1, p.category2),
-                (p, old) -> p.count + (old == null ? 0 : old)
+                p -> String.format("%s-%s", p.getCategory1(), p.getCategory2()),
+                (p, old) -> p.getCount() + (old == null ? 0 : old)
 
         );
-        System.out.println(r2);
+        //language=JSON
+        JSONAssert.assertEquals("[\n" +
+                "  {\n" +
+                "    \"id\": 1,\n" +
+                "    \"name\": \"n1\",\n" +
+                "    \"category1\": \"c1-1\",\n" +
+                "    \"category2\": \"c2-2\",\n" +
+                "    \"count\": 2,\n" +
+                "    \"dynamicData\": {\n" +
+                "      \"c1-1-c2-2\": 4\n" +
+                "    }\n" +
+                "  }, {\n" +
+                "  \"id\": 2,\n" +
+                "  \"name\": \"n1\",\n" +
+                "  \"category1\": \"c1-1\",\n" +
+                "  \"category2\": \"c2-2\",\n" +
+                "  \"count\": 2,\n" +
+                "  \"dynamicData\": {\n" +
+                "    \"c1-1-c2-2\": 2,\n" +
+                "    \"c1-2-c2-2\": 2\n" +
+                "  }\n" +
+                "}, {\n" +
+                "  \"id\": 3,\n" +
+                "  \"name\": \"n1\",\n" +
+                "  \"category1\": \"c1-1\",\n" +
+                "  \"category2\": \"c2-2\",\n" +
+                "  \"count\": 2,\n" +
+                "  \"dynamicData\": {\n" +
+                "    \"c1-1-c2-2\": 2\n" +
+                "  }\n" +
+                "}\n" +
+                "]", this.objectMapper.writeValueAsString(results), false);
     }
 }

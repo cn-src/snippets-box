@@ -1,4 +1,4 @@
-package cn.javaer.snippets.box.model;
+package cn.javaer.snippets.box.model.pojo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-class Areas {
+public class Areas {
     String area1;
     String area2;
     String area3;

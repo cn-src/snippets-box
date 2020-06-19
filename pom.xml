@@ -162,18 +162,13 @@
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-assertions-generator-maven-plugin</artifactId>
                 <version>${assertj-assertions-generator-maven-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generate-assertions</goal>
-                        </goals>
-                    </execution>
-                </executions>
                 <configuration>
-                    <classes>
-                        <param>cn.javaer.snippets.box.spring.data.jooq.jdbc.user.User</param>
-                        <param>cn.javaer.snippets.spring.boot.autoconfigure.eclipse.collections.city.City</param>
-                    </classes>
+                    <packages>
+                        <package>cn.javaer.snippets</package>
+                    </packages>
+                    <includes>
+                        <include>cn\.javaer\.snippets\..*\.pojo\..*</include>
+                    </includes>
                     <entryPointClassPackage>cn.javaer.snippets.box.test</entryPointClassPackage>
                     <templates>
                         <templatesDirectory>${project.basedir}/src/test/resources/templates/
@@ -181,7 +176,28 @@
                         <assertionsEntryPointClass>standard_assertions_entry_point_class_template.txt
                         </assertionsEntryPointClass>
                     </templates>
+                    <cleanTargetDir>true</cleanTargetDir>
+                    <targetDir>${basedir}/src/test/assertj-assertions</targetDir>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>add-test-source</id>
+                        <phase>generate-test-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/test/assertj-assertions</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

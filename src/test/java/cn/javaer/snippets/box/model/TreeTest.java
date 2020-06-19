@@ -1,5 +1,6 @@
 package cn.javaer.snippets.box.model;
 
+import cn.javaer.snippets.box.model.pojo.Areas;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
