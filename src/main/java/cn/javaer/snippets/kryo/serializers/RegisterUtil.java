@@ -13,7 +13,7 @@ public class RegisterUtil {
     private RegisterUtil() {}
 
     public static void register(final Kryo kryo, final Serializer<?> serializer, final Class<?> interfaceClass, final String... scanPackage) {
-        try (final ScanResult scanResult = new ClassGraph().enableClassInfo().ignoreClassVisibility().whitelistPackages(scanPackage)
+        try (final ScanResult scanResult = new ClassGraph().enableClassInfo().ignoreClassVisibility().acceptPackages(scanPackage)
                 .scan()) {
             final ClassInfoList classInfos = scanResult.getClassesImplementing(interfaceClass.getName())
                     .filter(it -> !it.isAbstract() && !it.isInterface());
