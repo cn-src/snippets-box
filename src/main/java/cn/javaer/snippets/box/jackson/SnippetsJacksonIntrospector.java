@@ -9,6 +9,8 @@ import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
  */
 public class SnippetsJacksonIntrospector extends JacksonAnnotationIntrospector {
     private static final long serialVersionUID = -6156647757687961666L;
+    
+    public static final SnippetsJacksonIntrospector INSTANCE = new SnippetsJacksonIntrospector();
 
     @Override
     public Object findDeserializer(final Annotated a) {
