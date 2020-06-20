@@ -1,8 +1,8 @@
 package cn.javaer.snippets.spring.boot.autoconfigure.data.jooq.jdbc;
 
-import cn.javaer.snippets.box.spring.data.jooq.jdbc.JsonbConverters;
-import cn.javaer.snippets.box.spring.data.jooq.jdbc.config.EnableJooqJdbcRepositories;
-import cn.javaer.snippets.box.spring.data.jooq.jdbc.config.JooqJdbcRepositoryConfigExtension;
+import cn.javaer.snippets.spring.data.jooq.jdbc.JsonbConverters;
+import cn.javaer.snippets.spring.data.jooq.jdbc.config.EnableJooqJdbcRepositories;
+import cn.javaer.snippets.spring.data.jooq.jdbc.config.JooqJdbcRepositoryConfigExtension;
 import org.jooq.DSLContext;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;

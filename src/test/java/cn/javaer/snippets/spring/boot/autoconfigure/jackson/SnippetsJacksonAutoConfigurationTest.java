@@ -1,6 +1,6 @@
 package cn.javaer.snippets.spring.boot.autoconfigure.jackson;
 
-import cn.javaer.snippets.box.spring.format.DateFillFormat;
+import cn.javaer.snippets.spring.format.DateFillFormat;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import org.junit.jupiter.api.Test;

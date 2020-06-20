@@ -1,6 +1,6 @@
 package cn.javaer.snippets.spring.boot.autoconfigure.jackson;
 
-import cn.javaer.snippets.box.jackson.SnippetsJacksonIntrospector;
+import cn.javaer.snippets.jackson.SnippetsJacksonIntrospector;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;

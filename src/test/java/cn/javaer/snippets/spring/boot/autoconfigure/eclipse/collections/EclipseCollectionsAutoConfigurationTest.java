@@ -1,7 +1,7 @@
 package cn.javaer.snippets.spring.boot.autoconfigure.eclipse.collections;
 
-import cn.javaer.snippets.box.TestAutoConfigurationPackage;
-import cn.javaer.snippets.box.empty.EmptyDataPackage;
+import cn.javaer.snippets.TestAutoConfigurationPackage;
+import cn.javaer.snippets.empty.EmptyDataPackage;
 import cn.javaer.snippets.spring.boot.autoconfigure.eclipse.collections.pojo.City;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
