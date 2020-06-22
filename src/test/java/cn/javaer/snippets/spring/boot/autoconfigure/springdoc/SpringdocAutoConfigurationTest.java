@@ -1,10 +1,9 @@
-package cn.javaer.snippets.springdoc;
+package cn.javaer.snippets.spring.boot.autoconfigure.springdoc;
 
 import org.junit.jupiter.api.Test;
 import org.springdoc.core.Constants;
 import org.springdoc.core.SpringDocConfigProperties;
 import org.springdoc.core.SpringDocConfiguration;
-import org.springdoc.core.SpringDocUtils;
 import org.springdoc.webmvc.core.MultipleOpenApiSupportConfiguration;
 import org.springdoc.webmvc.core.SpringDocWebMvcConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -32,10 +31,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * @author cn-src
  */
-class PageableDocTest {
+class SpringdocAutoConfigurationTest {
+
     private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
             .withConfiguration(
-                    AutoConfigurations.of(SpringDocConfigProperties.class, SpringDocConfiguration.class, MultipleOpenApiSupportConfiguration.class, SpringDocWebMvcConfiguration.class, MockMvcAutoConfiguration.class, WebMvcAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
+                    AutoConfigurations.of(
+                            SpringdocAutoConfiguration.class,
+                            SpringDocConfigProperties.class, SpringDocConfiguration.class,
+                            MultipleOpenApiSupportConfiguration.class,
+                            SpringDocWebMvcConfiguration.class, MockMvcAutoConfiguration.class,
+                            WebMvcAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
                             HttpMessageConvertersAutoConfiguration.class));
 
     @Test
@@ -43,10 +48,7 @@ class PageableDocTest {
         this.contextRunner.withUserConfiguration(DemoController.class)
                 .run(context -> {
                     final MockMvc mockMvc = context.getBean(MockMvc.class);
-                    SpringDocUtils.getConfig().replaceWithClass(Pageable.class,
-                            PageableDoc.class);
-                    SpringDocUtils.getConfig().replaceWithClass(Page.class,
-                            PageDoc.class);
+
                     final MvcResult mvcResult = mockMvc.perform(get(Constants.DEFAULT_API_DOCS_URL)).andExpect(status().isOk())
                             .andExpect(jsonPath("$.components.schemas.Pageable.properties._page.description", is("分页-页码"))).andReturn();
 //                    System.out.println(mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8));
