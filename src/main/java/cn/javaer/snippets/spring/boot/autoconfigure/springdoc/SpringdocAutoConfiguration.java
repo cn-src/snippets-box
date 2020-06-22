@@ -13,7 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 /**
- * 将 jOOQ 仅用于 SQL 生成时的自动配置（即：没有数据源）.
+ * SpringDoc 支持.
  *
  * @author cn-src
  */
