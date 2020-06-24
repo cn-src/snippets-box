@@ -169,6 +169,7 @@
                     </packages>
                     <includes>
                         <include>cn\.javaer\.snippets\..*\.pojo\..*</include>
+                        <include>cn\.javaer\.snippets\.model\.TreeNode</include>
                     </includes>
                     <entryPointClassPackage>cn.javaer.snippets.box.test</entryPointClassPackage>
                     <templates>

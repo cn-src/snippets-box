@@ -1,13 +1,4 @@
-package cn.javaer.snippets.test;
-
-import cn.javaer.snippets.model.pojo.Areas;
-import cn.javaer.snippets.model.pojo.AreasAssert;
-import cn.javaer.snippets.model.pojo.Product;
-import cn.javaer.snippets.model.pojo.Product2;
-import cn.javaer.snippets.model.pojo.Product2Assert;
-import cn.javaer.snippets.model.pojo.ProductAssert;
-import cn.javaer.snippets.spring.data.jooq.jdbc.pojo.User;
-import cn.javaer.snippets.spring.data.jooq.jdbc.pojo.UserAssert;
+package cn.javaer.snippets.box.test;
 
 /**
  * Like {@link SoftAssertions} but as a junit rule that takes care of calling
@@ -31,47 +22,47 @@ import cn.javaer.snippets.spring.data.jooq.jdbc.pojo.UserAssert;
 public class JUnitSoftAssertions extends org.assertj.core.api.JUnitSoftAssertions {
 
   /**
-   * Creates a new "soft" instance of <code>{@link AreasAssert}</code>.
+   * Creates a new "soft" instance of <code>{@link cn.javaer.snippets.model.TreeNodeAssert}</code>.
    *
    * @param actual the actual value.
    * @return the created "soft" assertion object.
    */
   @org.assertj.core.util.CheckReturnValue
-  public AreasAssert assertThat(Areas actual) {
-    return proxy(AreasAssert.class, Areas.class, actual);
+  public cn.javaer.snippets.model.TreeNodeAssert assertThat(cn.javaer.snippets.model.TreeNode actual) {
+    return proxy(cn.javaer.snippets.model.TreeNodeAssert.class, cn.javaer.snippets.model.TreeNode.class, actual);
   }
 
   /**
-   * Creates a new "soft" instance of <code>{@link ProductAssert}</code>.
+   * Creates a new "soft" instance of <code>{@link cn.javaer.snippets.model.pojo.AreasAssert}</code>.
    *
    * @param actual the actual value.
    * @return the created "soft" assertion object.
    */
   @org.assertj.core.util.CheckReturnValue
-  public ProductAssert assertThat(Product actual) {
-    return proxy(ProductAssert.class, Product.class, actual);
+  public cn.javaer.snippets.model.pojo.AreasAssert assertThat(cn.javaer.snippets.model.pojo.Areas actual) {
+    return proxy(cn.javaer.snippets.model.pojo.AreasAssert.class, cn.javaer.snippets.model.pojo.Areas.class, actual);
   }
 
   /**
-   * Creates a new "soft" instance of <code>{@link Product2Assert}</code>.
+   * Creates a new "soft" instance of <code>{@link cn.javaer.snippets.model.pojo.ProductAssert}</code>.
    *
    * @param actual the actual value.
    * @return the created "soft" assertion object.
    */
   @org.assertj.core.util.CheckReturnValue
-  public Product2Assert assertThat(Product2 actual) {
-    return proxy(Product2Assert.class, Product2.class, actual);
+  public cn.javaer.snippets.model.pojo.ProductAssert assertThat(cn.javaer.snippets.model.pojo.Product actual) {
+    return proxy(cn.javaer.snippets.model.pojo.ProductAssert.class, cn.javaer.snippets.model.pojo.Product.class, actual);
   }
 
   /**
-   * Creates a new "soft" instance of <code>{@link UserAssert}</code>.
+   * Creates a new "soft" instance of <code>{@link cn.javaer.snippets.model.pojo.Product2Assert}</code>.
    *
    * @param actual the actual value.
    * @return the created "soft" assertion object.
    */
   @org.assertj.core.util.CheckReturnValue
-  public UserAssert assertThat(User actual) {
-    return proxy(UserAssert.class, User.class, actual);
+  public cn.javaer.snippets.model.pojo.Product2Assert assertThat(cn.javaer.snippets.model.pojo.Product2 actual) {
+    return proxy(cn.javaer.snippets.model.pojo.Product2Assert.class, cn.javaer.snippets.model.pojo.Product2.class, actual);
   }
 
   /**
@@ -83,6 +74,17 @@ public class JUnitSoftAssertions extends org.assertj.core.api.JUnitSoftAssertion
   @org.assertj.core.util.CheckReturnValue
   public cn.javaer.snippets.spring.boot.autoconfigure.eclipse.collections.pojo.CityAssert assertThat(cn.javaer.snippets.spring.boot.autoconfigure.eclipse.collections.pojo.City actual) {
     return proxy(cn.javaer.snippets.spring.boot.autoconfigure.eclipse.collections.pojo.CityAssert.class, cn.javaer.snippets.spring.boot.autoconfigure.eclipse.collections.pojo.City.class, actual);
+  }
+
+  /**
+   * Creates a new "soft" instance of <code>{@link cn.javaer.snippets.spring.data.jooq.jdbc.pojo.UserAssert}</code>.
+   *
+   * @param actual the actual value.
+   * @return the created "soft" assertion object.
+   */
+  @org.assertj.core.util.CheckReturnValue
+  public cn.javaer.snippets.spring.data.jooq.jdbc.pojo.UserAssert assertThat(cn.javaer.snippets.spring.data.jooq.jdbc.pojo.User actual) {
+    return proxy(cn.javaer.snippets.spring.data.jooq.jdbc.pojo.UserAssert.class, cn.javaer.snippets.spring.data.jooq.jdbc.pojo.User.class, actual);
   }
 
 }
