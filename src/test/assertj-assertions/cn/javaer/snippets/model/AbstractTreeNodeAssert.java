@@ -177,7 +177,7 @@ public abstract class AbstractTreeNodeAssert<S extends AbstractTreeNodeAssert<S,
    * @return this assertion object.
    * @throws AssertionError - if the actual TreeNode's title is not equal to the given one.
    */
-  public S hasTitle(T title) {
+  public S hasTitle(String title) {
     // check that actual TreeNode we want to make assertions on is not null.
     isNotNull();
 
@@ -185,7 +185,7 @@ public abstract class AbstractTreeNodeAssert<S extends AbstractTreeNodeAssert<S,
     String assertjErrorMessage = "\nExpecting title of:\n  <%s>\nto be:\n  <%s>\nbut was:\n  <%s>";
 
     // null safe check
-    T actualTitle = actual.getTitle();
+    String actualTitle = actual.getTitle();
     if (!Objects.areEqual(actualTitle, title)) {
       failWithMessage(assertjErrorMessage, actual, title, actualTitle);
     }

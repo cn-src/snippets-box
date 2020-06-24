@@ -28,37 +28,36 @@ public abstract class Tree {
      * @param models 二维表结构的实体数据
      * @param fns 实体的哪些字段 getter 用于转换成树
      * @param <E> 实体类型
-     * @param <T> Tree 节点类型
      *
      * @return 根节点的所有子节点
      */
     @SafeVarargs
-    public static <E, T> List<TreeNode<T>> of(final List<E> models, final Function<E, T>... fns) {
+    public static <E> List<TreeNode> of(final List<E> models, final Function<E, String>... fns) {
         Objects.requireNonNull(fns);
 
         if (models == null || models.isEmpty()) {
             return Collections.emptyList();
         }
 
-        final TreeNode<T> root = new TreeNode<>();
-        TreeNode<T> current = root;
+        final TreeNode root = new TreeNode();
+        TreeNode current = root;
 
         for (final E row : models) {
-            for (final Function<E, T> fn : fns) {
-                final T cell = fn.apply(row);
+            for (final Function<E, String> fn : fns) {
+                final String cell = fn.apply(row);
 
                 if (current.getChildren() == null) {
                     current.setChildren(new ArrayList<>());
                 }
 
-                final Optional<TreeNode<T>> first = current.getChildren().stream()
+                final Optional<TreeNode> first = current.getChildren().stream()
                         .filter(it -> Objects.equals(cell, it.getTitle()))
                         .findFirst();
                 if (first.isPresent()) {
                     current = first.get();
                 }
                 else {
-                    final TreeNode<T> treeNode = new TreeNode<>(cell);
+                    final TreeNode treeNode = new TreeNode(cell);
                     current.getChildren().add(treeNode);
                     current = treeNode;
                 }
@@ -75,12 +74,11 @@ public abstract class Tree {
      * @param createFn 实体类创建函数
      * @param fns 实体类 setter 函数
      * @param <E> 实体类型
-     * @param <T> Tree 节点类型
      *
      * @return 实体列表
      */
     @SafeVarargs
-    public static <E, T> List<E> toModel(final List<TreeNode<T>> treeNodes, final Supplier<E> createFn, final BiConsumer<E, T>... fns) {
+    public static <E> List<E> toModel(final List<TreeNode> treeNodes, final Supplier<E> createFn, final BiConsumer<E, String>... fns) {
         Objects.requireNonNull(createFn);
         Objects.requireNonNull(fns);
 
@@ -89,9 +87,9 @@ public abstract class Tree {
         }
 
         final List<E> result = new ArrayList<>();
-        TreeNode<T> current = new TreeNode<>();
+        TreeNode current = new TreeNode();
         current.setChildren(new ArrayList<>(treeNodes));
-        final LinkedList<TreeNode<T>> stack = new LinkedList<>();
+        final LinkedList<TreeNode> stack = new LinkedList<>();
         stack.push(current);
 
         // 遍历树结构，转换成二维表结构用于存库
@@ -103,15 +101,15 @@ public abstract class Tree {
                 stack.push(current);
             }
             else {
-                final int size = Math.min(stack.size(), fns.length);
+                final int size = stack.size() - 1;
                 final E e = createFn.get();
-                for (int i = 1; i < size; i++) {
-                    fns[i].accept(e, stack.get(i).getTitle());
+                for (int i = 0; i < size; i++) {
+                    fns[i].accept(e, stack.get(size - 1 - i).getTitle());
                 }
                 result.add(e);
                 stack.pop();
 
-                TreeNode<T> peek = stack.peek();
+                TreeNode peek = stack.peek();
                 if (peek != null) {
                     peek.getChildren().remove(0);
                 }

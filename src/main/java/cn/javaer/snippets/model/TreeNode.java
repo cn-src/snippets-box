@@ -12,25 +12,24 @@ import java.util.List;
  * @author cn-src
  */
 @Data
-public class TreeNode<T> {
-    private T title;
-    private List<TreeNode<T>> children;
+public class TreeNode {
+    private String title;
+    private List<TreeNode> children;
 
     public TreeNode() {
     }
 
-    public TreeNode(final T title) {
+    public TreeNode(final String title) {
         this.title = title;
     }
 
-    @SafeVarargs
-    public final void addChildren(final TreeNode<T>... children) {
-        if (children == null || children.length == 0) {
+    public final void addChildren(final TreeNode... child) {
+        if (child == null || child.length == 0) {
             return;
         }
         if (this.children == null) {
             this.children = new ArrayList<>();
         }
-        this.children.addAll(Arrays.asList(children));
+        this.children.addAll(Arrays.asList(child));
     }
 }
