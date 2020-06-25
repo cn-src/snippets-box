@@ -40,7 +40,7 @@ class SnippetsGeneratorTest {
                         .withPassword(dataSourceInfo.getPassword())
                 )
                 .withGenerator(new Generator()
-                        .withName("cn.javaer.snippets.jooq.codegen.SnippetsGenerator")
+                        .withName(SnippetsGenerator.class.getName())
                         .withDatabase(new Database()
                                 .withName("org.jooq.meta.postgres.PostgresDatabase")
                                 .withInputSchema("public")
