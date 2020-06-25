@@ -4,6 +4,8 @@ import org.jooq.Condition;
 import org.jooq.Context;
 import org.jooq.DataType;
 import org.jooq.Record;
+import org.jooq.SQLDialect;
+import org.jooq.Support;
 import org.jooq.Table;
 import org.jooq.TableField;
 import org.jooq.impl.CustomField;
@@ -31,6 +33,7 @@ public class JsonbField<R extends Record, T> extends CustomField<T> implements T
         ctx.visit(this.getUnqualifiedName());
     }
 
+    @Support(SQLDialect.POSTGRES)
     public Condition containsJson(final T jsonObj) {
         return DSL.condition("{0}::jsonb @> {1}::jsonb", this,
                 DSL.val(jsonObj));
