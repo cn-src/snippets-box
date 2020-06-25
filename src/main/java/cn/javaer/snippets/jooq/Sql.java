@@ -1,11 +1,10 @@
 package cn.javaer.snippets.jooq;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jooq.Condition;
 import org.jooq.Field;
 import org.jooq.JSONB;
 import org.jooq.impl.DSL;
+import org.jooq.tools.json.JSONValue;
 
 import java.util.Collections;
 
@@ -13,8 +12,6 @@ import java.util.Collections;
  * @author cn-src
  */
 public abstract class Sql {
-
-    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     private Sql() {}
 
@@ -24,14 +21,9 @@ public abstract class Sql {
     }
 
     public static Condition jsonbContains(final Field<JSONB> jsonField, final String jsonKey, final Object jsonValue) {
-        try {
-            final String json = Sql.objectMapper.writeValueAsString(Collections.singletonMap(jsonKey, jsonValue));
-            return DSL.condition("{0}::jsonb @> {1}::jsonb", jsonField,
-                    DSL.val(json, jsonField.getDataType()));
-        }
-        catch (final JsonProcessingException e) {
-            throw new IllegalStateException(e);
-        }
+        final String json = JSONValue.toJSONString(Collections.singletonMap(jsonKey, jsonValue));
+        return DSL.condition("{0}::jsonb @> {1}::jsonb", jsonField,
+                DSL.val(json, jsonField.getDataType()));
     }
 
     public static Condition jsonbContains(final Field<JSONB> jsonField, final JSONB jsonb) {
