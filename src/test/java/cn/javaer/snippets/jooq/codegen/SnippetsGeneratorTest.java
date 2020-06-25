@@ -9,6 +9,7 @@ import org.jooq.meta.jaxb.Generate;
 import org.jooq.meta.jaxb.Generator;
 import org.jooq.meta.jaxb.Jdbc;
 import org.jooq.meta.jaxb.Target;
+import org.jooq.meta.postgres.PostgresDatabase;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -42,7 +43,7 @@ class SnippetsGeneratorTest {
                 .withGenerator(new Generator()
                         .withName(SnippetsGenerator.class.getName())
                         .withDatabase(new Database()
-                                .withName("org.jooq.meta.postgres.PostgresDatabase")
+                                .withName(PostgresDatabase.class.getName())
                                 .withInputSchema("public")
                                 .withIncludes(".*")
                                 .withIncludeRoutines(false)
