@@ -10,6 +10,9 @@ import org.jooq.Table;
 import org.jooq.TableField;
 import org.jooq.impl.CustomField;
 import org.jooq.impl.DSL;
+import org.jooq.tools.json.JSONValue;
+
+import java.util.Collections;
 
 /**
  * @author cn-src
@@ -36,7 +39,14 @@ public class JsonbField<R extends Record, T> extends CustomField<T> implements T
     @Support(SQLDialect.POSTGRES)
     public Condition containsJson(final T jsonObj) {
         return DSL.condition("{0}::jsonb @> {1}::jsonb", this,
-                DSL.val(jsonObj));
+                DSL.val(jsonObj, this.getDataType()));
+    }
+
+    @Support(SQLDialect.POSTGRES)
+    public Condition containsJson(final String jsonKey, final Object jsonValue) {
+        final String json = JSONValue.toJSONString(Collections.singletonMap(jsonKey, jsonValue));
+        return DSL.condition("{0}::jsonb @> {1}::jsonb", this,
+                DSL.val(json, this.getDataType()));
     }
 
     @Override
