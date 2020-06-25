@@ -3,6 +3,7 @@ package cn.javaer.snippets.jooq.field;
 import org.jooq.Condition;
 import org.jooq.Context;
 import org.jooq.DataType;
+import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.SQLDialect;
 import org.jooq.Support;
@@ -36,10 +37,20 @@ public class JsonbField<R extends Record, T> extends CustomField<T> implements T
         ctx.visit(this.getUnqualifiedName());
     }
 
+    @SuppressWarnings("unchecked")
     @Support(SQLDialect.POSTGRES)
     public Condition containsJson(final T jsonObj) {
+        if (jsonObj instanceof Field) {
+            return this.containsJson((Field) jsonObj);
+        }
         return DSL.condition("{0}::jsonb @> {1}::jsonb", this,
                 DSL.val(jsonObj, this.getDataType()));
+    }
+
+    @Support(SQLDialect.POSTGRES)
+    public Condition containsJson(final Field<T> jsonField) {
+        return DSL.condition("{0}::jsonb @> {1}::jsonb", this,
+                jsonField);
     }
 
     @Support(SQLDialect.POSTGRES)
