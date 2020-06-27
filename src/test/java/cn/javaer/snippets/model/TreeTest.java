@@ -8,7 +8,8 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import java.util.Arrays;
 import java.util.List;
 
-import static cn.javaer.snippets.box.test.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 
 /**
  * @author cn-src
@@ -37,14 +38,11 @@ class TreeTest {
         tn1.addChildren(tn11);
         final List<Areas> areas = Tree.toModel(Arrays.asList(tn1, tn2),
                 Areas::new, Areas::setArea1, Areas::setArea2, Areas::setArea3);
-        assertThat(areas).hasSize(2);
-        assertThat(areas.get(0))
-                .hasArea1("河北省")
-                .hasArea2("石家庄市")
-                .hasArea3(null);
-        assertThat(areas.get(1))
-                .hasArea1("山东省")
-                .hasArea2(null)
-                .hasArea3(null);
+        assertThat(areas).hasSize(2)
+                .extracting(Areas::getArea1, Areas::getArea2, Areas::getArea3)
+                .contains(
+                        tuple("河北省", "石家庄市", null),
+                        tuple("山东省", null, null)
+                );
     }
 }

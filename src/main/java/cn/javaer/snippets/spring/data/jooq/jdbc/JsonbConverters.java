@@ -8,7 +8,9 @@ import org.postgresql.util.PGobject;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.convert.ReadingConverter;
 import org.springframework.data.convert.WritingConverter;
+import org.springframework.lang.NonNull;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -46,7 +48,7 @@ public abstract class JsonbConverters {
     }
 
     @WritingConverter
-    public enum JsonbToConverter implements Converter<JSONB, String> {
+    public enum JsonbToConverter implements Converter<JSONB, PGobject> {
 
         /**
          * 单实例.
@@ -54,8 +56,16 @@ public abstract class JsonbConverters {
         INSTANCE;
 
         @Override
-        public String convert(final JSONB source) {
-            return source.data();
+        public PGobject convert(final JSONB source) {
+            final PGobject obj = new PGobject();
+            obj.setType("jsonb");
+            try {
+                obj.setValue(source.data());
+            }
+            catch (final SQLException e) {
+                throw new IllegalStateException(e);
+            }
+            return obj;
         }
     }
 
@@ -79,7 +89,7 @@ public abstract class JsonbConverters {
     }
 
     @WritingConverter
-    public enum JsonNodeToConverter implements Converter<JsonNode, String> {
+    public enum JsonNodeToConverter implements Converter<JsonNode, PGobject> {
 
         /**
          * 单实例.
@@ -87,11 +97,15 @@ public abstract class JsonbConverters {
         INSTANCE;
 
         @Override
-        public String convert(final JsonNode source) {
+        public PGobject convert(@NonNull final JsonNode source) {
             try {
-                return objectMapper.writeValueAsString(source);
+                final String json = objectMapper.writeValueAsString(source);
+                final PGobject obj = new PGobject();
+                obj.setType("jsonb");
+                obj.setValue(json);
+                return obj;
             }
-            catch (final JsonProcessingException e) {
+            catch (final JsonProcessingException | SQLException e) {
                 throw new IllegalStateException(e);
             }
         }

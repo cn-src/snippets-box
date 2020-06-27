@@ -12,6 +12,7 @@ import java.util.Set;
 /**
  * @author cn-src
  */
+@Deprecated
 public class JooqJdbcCustomConversions extends JdbcCustomConversions {
     private SimpleTypeHolder simpleTypeHolder;
 

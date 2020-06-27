@@ -45,7 +45,7 @@ public class JooqJdbcRepositoriesAutoConfiguration {
     static class SpringBootJooqJdbcConfiguration extends AbstractJdbcConfiguration {
         @Override
         public JdbcCustomConversions jdbcCustomConversions() {
-            return new JooqJdbcCustomConversions(JsonbConverters.getConvertersToRegister());
+            return new JdbcCustomConversions(JsonbConverters.getConvertersToRegister());
         }
     }
 }

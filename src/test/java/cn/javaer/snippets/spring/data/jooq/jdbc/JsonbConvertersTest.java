@@ -18,8 +18,8 @@ class JsonbConvertersTest {
     void jsonNodeToConverter() {
         final ObjectNode node = new ObjectNode(new JsonNodeFactory(true));
         node.put("k1", "v1");
-        final String json = JsonbConverters.JsonNodeToConverter.INSTANCE.convert(node);
-        assertThat(json).isEqualTo("{\"k1\":\"v1\"}");
+        final PGobject obj = JsonbConverters.JsonNodeToConverter.INSTANCE.convert(node);
+        assertThat(obj.getValue()).isEqualTo("{\"k1\":\"v1\"}");
     }
 
     @Test
