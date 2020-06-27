@@ -166,48 +166,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.assertj</groupId>
-                <artifactId>assertj-assertions-generator-maven-plugin</artifactId>
-                <version>${assertj-assertions-generator-maven-plugin.version}</version>
-                <configuration>
-                    <packages>
-                        <package>cn.javaer.snippets</package>
-                    </packages>
-                    <includes>
-                        <include>cn\.javaer\.snippets\..*\.pojo\..*</include>
-                        <include>cn\.javaer\.snippets\.model\.TreeNode</include>
-                    </includes>
-                    <entryPointClassPackage>cn.javaer.snippets.box.test</entryPointClassPackage>
-                    <templates>
-                        <templatesDirectory>${project.basedir}/src/test/resources/templates/
-                        </templatesDirectory>
-                        <assertionsEntryPointClass>standard_assertions_entry_point_class_template.txt
-                        </assertionsEntryPointClass>
-                    </templates>
-                    <cleanTargetDir>true</cleanTargetDir>
-                    <targetDir>${basedir}/src/test/assertj-assertions</targetDir>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>${build-helper-maven-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>add-test-source</id>
-                        <phase>generate-test-sources</phase>
-                        <goals>
-                            <goal>add-test-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>src/test/assertj-assertions</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
     <name>snippets-box</name>
