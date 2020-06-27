@@ -50,8 +50,7 @@ class JooqJdbcRepositoriesAutoConfigurationTest {
                     jsonb2.put("k2", "v2");
                     repository.save(new Demo(jsonb1, jsonb2));
                     final Iterable<Demo> demos = repository.findAll();
-                    assertThat(demos).hasSize(1)
-                            .extracting(Demo::getJsonb1, Demo::getJsonb2);
+                    assertThat(demos).hasSize(1);
                 });
     }
 
