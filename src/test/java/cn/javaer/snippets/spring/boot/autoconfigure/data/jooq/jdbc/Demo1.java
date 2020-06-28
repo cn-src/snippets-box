@@ -1,4 +1,4 @@
-package cn.javaer.snippets.spring.boot.autoconfigure.data.jooq.jdbc.pojo;
+package cn.javaer.snippets.spring.boot.autoconfigure.data.jooq.jdbc;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Data;
@@ -8,8 +8,8 @@ import org.springframework.data.annotation.Id;
 
 @Data
 @NoArgsConstructor
-public class Demo {
-    public Demo(final JSONB jsonb1, final JsonNode jsonb2) {
+public class Demo1 {
+    public Demo1(final JSONB jsonb1, final JsonNode jsonb2) {
         this.jsonb1 = jsonb1;
         this.jsonb2 = jsonb2;
     }
