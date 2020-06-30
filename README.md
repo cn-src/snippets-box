@@ -7,4 +7,4 @@
 # Snippets Box
 > 一些零散的代码片段，集成 jar 后可直接使用
 
-[文档]()
+[文档](https://cn-src.gitee.io/snippets-box/)
