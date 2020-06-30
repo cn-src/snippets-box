@@ -24,8 +24,8 @@
         <eclipse-collections.version>10.2.0</eclipse-collections.version>
         <simpleflatmapper.version>8.2.3</simpleflatmapper.version>
         <kryo.version>5.0.0-RC6</kryo.version>
-        <classgraph.version>4.8.86</classgraph.version>
-        <springdoc.version>1.4.1</springdoc.version>
+        <classgraph.version>4.8.87</classgraph.version>
+        <springdoc.version>1.4.2</springdoc.version>
     </properties>
 
     <dependencies>
