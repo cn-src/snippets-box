@@ -108,7 +108,7 @@ public abstract class Tree {
         // 从根节点，遍历到叶子节点，为数据库一条记录，同时移除此叶子节点
         // 当前迭代的节点往根节点方向，以及同级的下级节点移动
         while (null != current) {
-            if (stack.size() < fns.length && !CollectionUtils.isEmpty(current.getChildren())) {
+            if (stack.size() <= fns.length && !CollectionUtils.isEmpty(current.getChildren())) {
                 current = current.getChildren().get(0);
                 stack.push(current);
             }
