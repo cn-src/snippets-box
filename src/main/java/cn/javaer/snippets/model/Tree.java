@@ -104,7 +104,7 @@ public abstract class Tree {
         final LinkedList<TreeNode> stack = new LinkedList<>();
         stack.push(current);
 
-        // 遍历树结构，转换成二维表结构用于存库
+        // 遍历树结构，转换成二维表结构用于存库，深度优先遍历
         // 从根节点，遍历到叶子节点，为数据库一条记录，同时移除此叶子节点
         // 当前迭代的节点往根节点方向，以及同级的下级节点移动
         while (null != current) {
