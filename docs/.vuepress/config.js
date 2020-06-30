@@ -8,7 +8,8 @@ module.exports = {
             '/date-format',
             '/spring',
             '/springdoc',
-            '/kryo'
+            '/kryo',
+            '/model'
         ]
     }
 }
