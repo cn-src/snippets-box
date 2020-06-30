@@ -1,4 +1,5 @@
 module.exports = {
+    base: './',
     themeConfig: {
         displayAllHeaders: true,
         sidebar: [
