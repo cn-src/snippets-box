@@ -1,5 +1,5 @@
 module.exports = {
-    base: 'https://cn-src.gitee.io/snippets-box/',
+    base: '/snippets-box/',
     themeConfig: {
         displayAllHeaders: true,
         sidebar: [
