@@ -1,10 +1,13 @@
 package cn.javaer.snippets.model;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 树节点.
@@ -15,6 +18,9 @@ import java.util.List;
 public class TreeNode {
     private String title;
     private List<TreeNode> children;
+
+    @JsonAnySetter
+    private Map<String, Object> dynamic;
 
     public TreeNode() {
     }
@@ -31,5 +37,10 @@ public class TreeNode {
             this.children = new ArrayList<>();
         }
         this.children.addAll(Arrays.asList(child));
+    }
+
+    @JsonAnyGetter
+    public Map<String, Object> getDynamic() {
+        return this.dynamic;
     }
 }

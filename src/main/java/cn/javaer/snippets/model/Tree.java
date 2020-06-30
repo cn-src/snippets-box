@@ -22,17 +22,26 @@ public abstract class Tree {
     private Tree() {
     }
 
+    @SafeVarargs
+    public static <E> List<TreeNode> of(final List<E> models,
+                                        final Function<E, String>... fns) {
+        return of(models, TreeNodeHandler.EMPTY, fns);
+    }
+
     /**
      * 将实体列表数据转换成树结构，比如多级区域数据转换成前端 UI 组件需要的 Tree 结构.
      *
      * @param models 二维表结构的实体数据
+     * @param handler 额外的附加处理，
      * @param fns 实体的哪些字段 getter 用于转换成树
      * @param <E> 实体类型
      *
      * @return 根节点的所有子节点
      */
     @SafeVarargs
-    public static <E> List<TreeNode> of(final List<E> models, final Function<E, String>... fns) {
+    public static <E> List<TreeNode> of(final List<E> models,
+                                        final TreeNodeHandler handler,
+                                        final Function<E, String>... fns) {
         Objects.requireNonNull(fns);
 
         if (models == null || models.isEmpty()) {
@@ -43,6 +52,7 @@ public abstract class Tree {
         TreeNode current = root;
 
         for (final E row : models) {
+            int depth = 1;
             for (final Function<E, String> fn : fns) {
                 final String cell = fn.apply(row);
 
@@ -58,9 +68,11 @@ public abstract class Tree {
                 }
                 else {
                     final TreeNode treeNode = new TreeNode(cell);
+                    handler.apply(treeNode, depth, current.getChildren().size());
                     current.getChildren().add(treeNode);
                     current = treeNode;
                 }
+                depth++;
             }
             current = root;
         }
