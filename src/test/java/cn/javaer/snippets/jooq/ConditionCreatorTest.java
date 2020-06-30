@@ -1,14 +1,18 @@
 package cn.javaer.snippets.jooq;
 
 import cn.javaer.snippets.jooq.condition.ConditionCreator;
+import cn.javaer.snippets.model.TreeNode;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.JSONB;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.junit.jupiter.api.Test;
+import org.testcontainers.shaded.com.fasterxml.jackson.core.type.TypeReference;
+import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -22,6 +26,7 @@ class ConditionCreatorTest {
     }
 
     DSLContext dsl = DSL.using(SQLDialect.POSTGRES);
+    ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
     void create() {
@@ -78,5 +83,52 @@ class ConditionCreatorTest {
     void exceptionQuery() {
         assertThatIllegalStateException()
                 .isThrownBy(() -> ConditionCreator.create(new ExceptionQuery("s1")));
+    }
+
+    @Test
+    void treeNodeListToCondition() throws Exception {
+
+        //language=JSON
+        final List<TreeNode> treeNodes = this.objectMapper.readValue("[\n" +
+                "  {\n" +
+                "    \"title\": \"1\",\n" +
+                "    \"children\": [\n" +
+                "      {\n" +
+                "        \"title\": \"1-1\",\n" +
+                "        \"children\": [\n" +
+                "          {\n" +
+                "            \"title\": \"1-1-1\"\n" +
+                "          }\n" +
+                "        ]\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"title\": \"1-2\",\n" +
+                "        \"children\": [\n" +
+                "        ]\n" +
+                "      }\n" +
+                "    ]\n" +
+                "  },\n" +
+                "  {\n" +
+                "    \"title\": \"2\",\n" +
+                "    \"children\": [\n" +
+                "      {\n" +
+                "        \"title\": \"2-1\",\n" +
+                "        \"children\": [\n" +
+                "          {\n" +
+                "            \"title\": \"2-1-1\"\n" +
+                "          }\n" +
+                "        ]\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"title\": \"2-2-1\"\n" +
+                "      }\n" +
+                "    ]\n" +
+                "  }\n" +
+                "]\n", new TypeReference<List<TreeNode>>() {});
+        final Condition condition = ConditionCreator.create(treeNodes,
+                DSL.field("f1", String.class),
+                DSL.field("f2", String.class),
+                DSL.field("f3", String.class));
+        System.out.println(this.dsl.renderInlined(condition));
     }
 }

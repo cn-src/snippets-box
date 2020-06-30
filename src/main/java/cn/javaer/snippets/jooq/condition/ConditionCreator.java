@@ -11,6 +11,7 @@ import cn.javaer.snippets.jooq.condition.annotation.ConditionGreaterThan;
 import cn.javaer.snippets.jooq.condition.annotation.ConditionIgnore;
 import cn.javaer.snippets.jooq.condition.annotation.ConditionLessOrEqual;
 import cn.javaer.snippets.jooq.condition.annotation.ConditionLessThan;
+import cn.javaer.snippets.model.TreeNode;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,6 +23,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 
@@ -33,8 +35,10 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 
@@ -66,6 +70,60 @@ public class ConditionCreator {
 
     public static Condition createWithIgnoreUnannotated(final Object query) {
         return ConditionCreator.create(query, true);
+    }
+
+    @SafeVarargs
+    public static Condition create(final List<TreeNode> treeNodes, final Field<String>... fields) {
+        Objects.requireNonNull(fields);
+        if (CollectionUtils.isEmpty(treeNodes)) {
+            return null;
+        }
+        TreeNode current = new TreeNode();
+        current.setChildren(new ArrayList<>(treeNodes));
+        final LinkedList<TreeNode> stack = new LinkedList<>();
+        stack.push(current);
+
+        Condition condition = null;
+        while (null != current) {
+            if (stack.size() <= fields.length && !CollectionUtils.isEmpty(current.getChildren())) {
+                current = current.getChildren().get(0);
+                stack.push(current);
+            }
+            else {
+                final Condition eq = fields[stack.size() - 2].eq(current.getTitle());
+                if (null == condition) {
+                    condition = eq;
+                }
+                else {
+                    condition = condition.or(eq);
+                }
+
+                stack.pop();
+
+                TreeNode peek = stack.peek();
+                if (peek != null) {
+                    peek.getChildren().remove(0);
+                }
+
+                // 迭代清理一条线的所有孤叶节点
+                while (peek != null && (peek.getChildren() == null || peek.getChildren().isEmpty())) {
+                    final TreeNode pop = stack.pop();
+                    if (!stack.isEmpty()) {
+                        condition = condition.and(fields[stack.size() - 1].eq(pop.getTitle()));
+                    }
+                    if (stack.isEmpty()) {
+                        peek = null;
+                        break;
+                    }
+                    peek = stack.peek();
+                    if (peek.getChildren() != null && !peek.getChildren().isEmpty()) {
+                        peek.getChildren().remove(0);
+                    }
+                }
+                current = peek;
+            }
+        }
+        return condition;
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
