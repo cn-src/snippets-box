@@ -44,20 +44,20 @@ import java.util.function.BiFunction;
  * @author cn-src
  */
 public class ConditionCreator {
-    private static final ConcurrentHashMap<Class<?>, List<ClassInfo>> cache = new ConcurrentHashMap<>();
-    private static final Map<Class<? extends Annotation>, BiFunction<Field, Object, Condition>> conditionFunMap = new HashMap<>();
+    private static final ConcurrentHashMap<Class<?>, List<ClassInfo>> CACHE = new ConcurrentHashMap<>();
+    private static final Map<Class<? extends Annotation>, BiFunction<Field, Object, Condition>> CONDITION_FUN_MAP = new HashMap<>();
 
     static {
         //noinspection unchecked
-        conditionFunMap.put(ConditionEqual.class, Field::eq);
+        CONDITION_FUN_MAP.put(ConditionEqual.class, Field::eq);
         //noinspection unchecked
-        conditionFunMap.put(ConditionLessThan.class, Field::lessThan);
+        CONDITION_FUN_MAP.put(ConditionLessThan.class, Field::lessThan);
         //noinspection unchecked
-        conditionFunMap.put(ConditionLessOrEqual.class, Field::lessOrEqual);
+        CONDITION_FUN_MAP.put(ConditionLessOrEqual.class, Field::lessOrEqual);
         //noinspection unchecked
-        conditionFunMap.put(ConditionGreaterThan.class, Field::greaterThan);
+        CONDITION_FUN_MAP.put(ConditionGreaterThan.class, Field::greaterThan);
         //noinspection unchecked
-        conditionFunMap.put(ConditionGreaterOrEqual.class, Field::greaterOrEqual);
+        CONDITION_FUN_MAP.put(ConditionGreaterOrEqual.class, Field::greaterOrEqual);
     }
 
     public static Condition create(final Object query) {
@@ -76,7 +76,7 @@ public class ConditionCreator {
 
         final List<Condition> conditions = new ArrayList<>();
         final Class<?> clazz = query.getClass();
-        final List<ClassInfo> classInfos = cache.computeIfAbsent(clazz, ConditionCreator::createClassCache);
+        final List<ClassInfo> classInfos = CACHE.computeIfAbsent(clazz, ConditionCreator::createClassCache);
         final Map<String, BetweenValue> betweenValueMap = new HashMap<>();
         try {
             for (final ClassInfo info : classInfos) {
@@ -186,7 +186,7 @@ public class ConditionCreator {
                 }
             }
             final BiFunction<Field, Object, Condition> conditionFun = conditionAnnotation == null ?
-                    null : conditionFunMap.get(conditionAnnotation.annotationType());
+                    null : CONDITION_FUN_MAP.get(conditionAnnotation.annotationType());
             classInfos.add(new ClassInfo(conditionAnnotation,
                     dr.getReadMethod(), DSL.field(underline(name)),
                     conditionFun));
